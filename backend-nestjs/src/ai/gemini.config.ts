@@ -1,7 +1,14 @@
 import type { ConfigService } from '@nestjs/config';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash';
-const DEFAULT_GEMINI_SCAN_MODEL = 'gemini-3.5-flash';
+const DEFAULT_GEMINI_SCAN_MODEL = 'gemini-2.0-flash-lite';
+
+const SCAN_MODEL_FALLBACKS = [
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash',
+] as const;
 
 /** Maraia (chat). Variable: GEMINI_API_KEY */
 export function resolveGeminiChatApiKey(
@@ -31,6 +38,33 @@ export function getGeminiScanModel(): string {
   return configured && configured.length > 0
     ? configured
     : DEFAULT_GEMINI_SCAN_MODEL;
+}
+
+/** Modelos a probar en el escáner (principal + respaldos si hay 503/429). */
+export function getGeminiScanModelCandidates(): string[] {
+  const primary = getGeminiScanModel();
+  const ordered = [primary, ...SCAN_MODEL_FALLBACKS.filter((m) => m !== primary)];
+  return [...new Set(ordered)];
+}
+
+export function isRetryableGeminiFailure(failure: GeminiApiFailure): boolean {
+  const lower = failure.message.toLowerCase();
+  return (
+    failure.status === 429 ||
+    failure.status === 503 ||
+    lower.includes('quota') ||
+    lower.includes('high demand') ||
+    lower.includes('overloaded')
+  );
+}
+
+export function isUnavailableGeminiModel(failure: GeminiApiFailure): boolean {
+  const lower = failure.message.toLowerCase();
+  return (
+    failure.status === 404 ||
+    lower.includes('no longer available') ||
+    lower.includes('not found')
+  );
 }
 
 export function buildGeminiGenerateContentUrl(
