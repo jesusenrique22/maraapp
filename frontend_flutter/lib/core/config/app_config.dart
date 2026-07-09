@@ -16,13 +16,13 @@ class AppConfig {
       if (!kDebugMode) {
         return Uri.base.origin;
       }
-      return 'http://127.0.0.1:3000';
+      return 'http://127.0.0.1:3010';
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000';
+      return 'http://10.0.2.2:3010';
     }
 
-    return 'http://127.0.0.1:3000';
+    return 'http://127.0.0.1:3010';
   }
 }

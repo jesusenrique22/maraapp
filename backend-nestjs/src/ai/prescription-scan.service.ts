@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { InventoryService } from '../inventory/inventory.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
+import { userFacingGeminiError } from './gemini.config';
 import { parsePrescriptionImageWithGemini } from './prescription-gemini.parser';
 import { matchPrescriptionToInventory } from './prescription-inventory.matcher';
 import type { PrescriptionScanResponse } from './prescription-scan.types';
@@ -34,17 +35,20 @@ export class PrescriptionScanService {
     }
 
     const mimeType = file.mimetype || 'image/jpeg';
-    const prescription = await parsePrescriptionImageWithGemini(
+    const parsed = await parsePrescriptionImageWithGemini(
       apiKey,
       file.buffer,
       mimeType,
     );
 
-    if (!prescription) {
-      throw new BadRequestException(
-        'No pudimos leer la receta. Intenta con una foto más nítida y bien iluminada.',
-      );
+    if (!parsed.ok) {
+      const message = parsed.failure
+        ? userFacingGeminiError(parsed.failure)
+        : 'No pudimos leer la receta. Intenta con una foto más nítida y bien iluminada.';
+      throw new BadRequestException(message);
     }
+
+    const prescription = parsed.data;
 
     if (prescription.medications.length === 0) {
       throw new BadRequestException(

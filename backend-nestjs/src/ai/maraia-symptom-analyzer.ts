@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { buildGeminiGenerateContentUrl } from './gemini.config';
 
 export type MaraiaAnalysisIntent =
   | 'greeting'
@@ -74,7 +75,7 @@ export async function analyzeMessageWithGemini(
   productsAlreadyShown: boolean,
 ): Promise<MaraiaMessageAnalysis | null> {
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = buildGeminiGenerateContentUrl(apiKey);
 
     const response = await fetch(url, {
       method: 'POST',

@@ -1,4 +1,9 @@
 import { Logger } from '@nestjs/common';
+import {
+  buildGeminiGenerateContentUrl,
+  readGeminiApiFailure,
+  type GeminiApiFailure,
+} from './gemini.config';
 import type { PrescriptionVisionResult } from './prescription-scan.types';
 
 const logger = new Logger('PrescriptionGeminiParser');
@@ -18,10 +23,13 @@ export async function parsePrescriptionImageWithGemini(
   apiKey: string,
   imageBuffer: Buffer,
   mimeType: string,
-): Promise<PrescriptionVisionResult | null> {
+): Promise<
+  | { ok: true; data: PrescriptionVisionResult }
+  | { ok: false; failure?: GeminiApiFailure }
+> {
   try {
     const base64 = imageBuffer.toString('base64');
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const url = buildGeminiGenerateContentUrl(apiKey);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -72,13 +80,14 @@ export async function parsePrescriptionImageWithGemini(
     });
 
     if (!response.ok) {
-      logger.warn(`Gemini vision ${response.status}: ${await response.text()}`);
-      return null;
+      const failure = await readGeminiApiFailure(response);
+      logger.warn(`Gemini vision ${failure.status}: ${failure.message}`);
+      return { ok: false, failure };
     }
 
     const data = await response.json();
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
-    if (!raw) return null;
+    if (!raw) return { ok: false };
 
     const parsed = JSON.parse(raw) as PrescriptionVisionResult;
     parsed.medications = (parsed.medications ?? []).filter(
@@ -86,9 +95,9 @@ export async function parsePrescriptionImageWithGemini(
     );
     parsed.confidence = Math.min(1, Math.max(0, Number(parsed.confidence) || 0));
 
-    return parsed;
+    return { ok: true, data: parsed };
   } catch (error) {
     logger.error('Error parsing prescription image', error);
-    return null;
+    return { ok: false };
   }
 }

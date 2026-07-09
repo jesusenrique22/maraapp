@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -22,6 +23,9 @@ class ApiClient {
 
   final http.Client _client;
   String? _authToken;
+
+  static const Duration _defaultTimeout = Duration(seconds: 30);
+  static const Duration _scanTimeout = Duration(seconds: 90);
 
   String get baseUrl => AppConfig.apiBaseUrl;
 
@@ -142,8 +146,8 @@ class ApiClient {
     );
 
     try {
-      final streamed = await request.send();
-      final response = await http.Response.fromStream(streamed);
+      final streamed = await request.send().timeout(_scanTimeout);
+      final response = await http.Response.fromStream(streamed).timeout(_scanTimeout);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return jsonDecode(response.body) as Map<String, dynamic>;
@@ -160,9 +164,15 @@ class ApiClient {
       } catch (_) {}
 
       throw ApiException(message, statusCode: response.statusCode);
+    } on ApiException {
+      rethrow;
+    } on TimeoutException {
+      throw ApiException(
+        'El escáner tardó demasiado. Verifica que la API esté en línea e intenta de nuevo.',
+      );
     } catch (error) {
       if (error is ApiException) rethrow;
-      throw ApiException('No se pudo escanear la receta');
+      throw ApiException('No se pudo conectar con la API en $baseUrl');
     }
   }
 
@@ -176,18 +186,22 @@ class ApiClient {
 
     try {
       final response = await switch (method) {
-        'GET' => _client.get(uri, headers: _headers()),
-        'POST' => _client.post(
-            uri,
-            headers: _headers(json: true),
-            body: body == null ? null : jsonEncode(body),
-          ),
-        'PATCH' => _client.patch(
-            uri,
-            headers: _headers(json: true),
-            body: body == null ? null : jsonEncode(body),
-          ),
-        'DELETE' => _client.delete(uri, headers: _headers()),
+        'GET' => _client.get(uri, headers: _headers()).timeout(_defaultTimeout),
+        'POST' => _client
+            .post(
+              uri,
+              headers: _headers(json: true),
+              body: body == null ? null : jsonEncode(body),
+            )
+            .timeout(_defaultTimeout),
+        'PATCH' => _client
+            .patch(
+              uri,
+              headers: _headers(json: true),
+              body: body == null ? null : jsonEncode(body),
+            )
+            .timeout(_defaultTimeout),
+        'DELETE' => _client.delete(uri, headers: _headers()).timeout(_defaultTimeout),
         _ => throw ApiException('Método no soportado'),
       };
 
@@ -207,6 +221,10 @@ class ApiClient {
       } catch (_) {}
 
       throw ApiException(message, statusCode: response.statusCode);
+    } on ApiException {
+      rethrow;
+    } on TimeoutException {
+      throw ApiException('La API no respondió a tiempo ($baseUrl)');
     } catch (error) {
       if (error is ApiException) rethrow;
       throw ApiException('No se pudo conectar con la API en $baseUrl');
