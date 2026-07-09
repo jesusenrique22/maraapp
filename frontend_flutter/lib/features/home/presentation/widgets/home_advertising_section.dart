@@ -40,8 +40,8 @@ class HomeAdvertisingSection extends StatelessWidget {
     final delivery = _deliveryBanner();
 
     final leadingSlides = <Widget>[
-      const DogPlusHeroSlide(),
       const MaraPuntosHeroSlide(),
+      const DogPlusHeroSlide(),
       MedicPlusHeroSlide(onTap: onMedicPlusTap),
     ];
 
