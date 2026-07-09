@@ -5,8 +5,19 @@ import { PrismaService } from '../prisma/prisma.service';
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Respuesta rápida para el health check de Render (timeout 5s). */
   @Get()
-  async check() {
+  check() {
+    return {
+      status: 'ok',
+      service: 'maraplus-api',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /** Verificación profunda: base de datos + latencia (no usar en Render health check). */
+  @Get('ready')
+  async ready() {
     const startedAt = Date.now();
 
     await this.prisma.$queryRaw`SELECT 1`;

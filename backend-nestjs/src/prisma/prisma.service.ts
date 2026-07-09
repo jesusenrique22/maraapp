@@ -7,7 +7,10 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   async onModuleInit() {
-    await this.$connect();
+    // Conexión en background: el API escucha antes y pasa el health check de Render.
+    void this.$connect().catch((error) => {
+      console.error('Prisma connect error (retry on first query):', error);
+    });
   }
 
   async onModuleDestroy() {
