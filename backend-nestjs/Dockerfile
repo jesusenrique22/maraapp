@@ -15,6 +15,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+# Prisma necesita OpenSSL en Alpine
+RUN apk add --no-cache openssl
+
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
@@ -24,4 +27,4 @@ RUN mkdir -p uploads/products
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
