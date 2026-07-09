@@ -1,0 +1,275 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  CUSTOMER
+  DOCTOR
+}
+
+enum InventoryMovementType {
+  ENTRY
+  EXIT
+  SALE
+  ADJUSTMENT
+  WASTE
+}
+
+model User {
+  id            String              @id @default(uuid())
+  email         String              @unique
+  password      String
+  name          String
+  role          UserRole            @default(CUSTOMER)
+  isActive      Boolean             @default(true) @map("is_active")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  movements     InventoryMovement[]
+  doctorProfile DoctorProfile?
+  appointments  Appointment[]       @relation("PatientAppointments")
+  orders        Order[]
+  avatarUrl     String?             @map("avatar_url")
+
+  @@map("users")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  iconUrl     String?   @map("icon_url")
+  sortOrder   Int       @default(0) @map("sort_order")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                String              @id @default(uuid())
+  sku               String              @unique
+  name              String
+  description       String?
+  price             Decimal             @db.Decimal(10, 2)
+  discountPercent   Int?                @map("discount_percent")
+  imageUrl          String?             @map("image_url")
+  categoryId        String              @map("category_id")
+  isFeatured        Boolean             @default(false) @map("is_featured")
+  isActive          Boolean             @default(true) @map("is_active")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  category          Category            @relation(fields: [categoryId], references: [id])
+  movements         InventoryMovement[]
+  prescriptionItems PrescriptionItem[]
+  orderItems        OrderItem[]
+
+  @@index([categoryId])
+  @@index([isFeatured])
+  @@map("products")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  DELIVERED
+  CANCELLED
+}
+
+enum FulfillmentType {
+  DELIVERY
+  PICKUP
+}
+
+model Branch {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  address      String
+  city         String
+  state        String?
+  phone        String?
+  whatsapp     String?
+  latitude     Decimal? @db.Decimal(10, 7)
+  longitude    Decimal? @db.Decimal(10, 7)
+  openingHours String?  @map("opening_hours")
+  isMain       Boolean  @default(false) @map("is_main")
+  isActive     Boolean  @default(true) @map("is_active")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  orders       Order[]
+  inventoryMovements InventoryMovement[]
+
+  @@index([isActive, sortOrder])
+  @@map("branches")
+}
+
+model Order {
+  id              String           @id @default(uuid())
+  orderNumber     String           @unique @map("order_number")
+  userId          String           @map("user_id")
+  branchId        String?          @map("branch_id")
+  fulfillmentType FulfillmentType  @default(DELIVERY) @map("fulfillment_type")
+  status          OrderStatus      @default(PENDING)
+  subtotal        Decimal          @db.Decimal(10, 2)
+  deliveryFee     Decimal          @db.Decimal(10, 2) @map("delivery_fee")
+  total           Decimal          @db.Decimal(10, 2)
+  deliveryAddress String?          @map("delivery_address")
+  notes           String?
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  items  OrderItem[]
+
+  @@index([userId, createdAt])
+  @@index([branchId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  orderId     String  @map("order_id")
+  productId   String  @map("product_id")
+  productName String  @map("product_name")
+  productSku  String  @map("product_sku")
+  unitPrice   Decimal @db.Decimal(10, 2) @map("unit_price")
+  quantity    Int
+  lineTotal   Decimal @db.Decimal(10, 2) @map("line_total")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+enum BannerPlacement {
+  HOME_HERO
+  HOME_STRIP
+}
+
+model Banner {
+  id              String          @id @default(uuid())
+  title           String
+  subtitle        String?
+  imageUrl        String          @map("image_url")
+  backgroundColor String          @default("#1B3A8A") @map("background_color")
+  textColor       String          @default("#FFFFFF") @map("text_color")
+  badgeText       String?         @map("badge_text")
+  buttonText      String?         @map("button_text")
+  linkUrl         String?         @map("link_url")
+  placement       BannerPlacement   @default(HOME_HERO)
+  sortOrder       Int             @default(0) @map("sort_order")
+  isActive        Boolean         @default(true) @map("is_active")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  @@index([placement, isActive])
+  @@map("banners")
+}
+
+model InventoryMovement {
+  id        String                @id @default(uuid())
+  productId String                @map("product_id")
+  branchId  String?               @map("branch_id")
+  type      InventoryMovementType
+  quantity  Int
+  reference String?
+  notes     String?
+  userId    String?               @map("user_id")
+  createdAt DateTime              @default(now()) @map("created_at")
+  product   Product               @relation(fields: [productId], references: [id])
+  branch    Branch?               @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  user      User?                 @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([productId, branchId])
+  @@index([createdAt])
+  @@map("inventory_movements")
+}
+
+model DoctorProfile {
+  id              String        @id @default(uuid())
+  userId          String        @unique @map("user_id")
+  specialty       String
+  bio             String?
+  consultationFee Decimal       @db.Decimal(10, 2) @map("consultation_fee")
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments    Appointment[]
+
+  @@map("doctor_profiles")
+}
+
+enum AppointmentStatus {
+  PENDING
+  ACCEPTED
+  SCHEDULED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Appointment {
+  id            String            @id @default(uuid())
+  patientId     String            @map("patient_id")
+  doctorId      String            @map("doctor_id")
+  dateTime      DateTime          @map("date_time")
+  status        AppointmentStatus @default(PENDING)
+  notes         String?
+  patientNotes  String?           @map("patient_notes")
+  rejectReason  String?           @map("reject_reason")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  patient       User              @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        DoctorProfile     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  prescriptions Prescription[]
+
+  @@index([doctorId, dateTime])
+  @@map("appointments")
+}
+
+model Prescription {
+  id            String             @id @default(uuid())
+  appointmentId String             @map("appointment_id")
+  diagnosis     String             @default("")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  
+  appointment   Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  items         PrescriptionItem[]
+
+  @@map("prescriptions")
+}
+
+model PrescriptionItem {
+  id             String       @id @default(uuid())
+  prescriptionId String       @map("prescription_id")
+  productId      String?      @map("product_id")
+  medicationName String       @map("medication_name")
+  dosage         String
+  duration       String
+  
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  product        Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@map("prescription_items")
+}

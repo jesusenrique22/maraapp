@@ -1,0 +1,55 @@
+# Blueprint Render + Neon PostgreSQL
+#
+# 1. Crea la base en https://neon.tech (copia DATABASE_URL y DIRECT_URL)
+# 2. Sube el repo a GitHub
+# 3. Render → New → Blueprint → conecta el repo
+# 4. Pega DATABASE_URL, DIRECT_URL, GEMINI_API_KEY y ADMIN_PASSWORD en el dashboard
+# 5. Tras el primer deploy del API, redeploy "maraplus-web" si hace falta
+
+services:
+  # ─── API NestJS ───
+  - type: web
+    name: maraplus-api
+    runtime: docker
+    dockerfilePath: backend-nestjs/Dockerfile
+    dockerContext: backend-nestjs
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_EMAIL
+        value: admin@maraplus.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PUBLIC_API_URL
+        fromService:
+          type: web
+          name: maraplus-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: RAPIDAPI_KEY
+        sync: false
+
+  # ─── Flutter Web (nginx) ───
+  - type: web
+    name: maraplus-web
+    runtime: docker
+    dockerfilePath: deploy/Dockerfile.render-web
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: maraplus-api
+          envVarKey: RENDER_EXTERNAL_URL
