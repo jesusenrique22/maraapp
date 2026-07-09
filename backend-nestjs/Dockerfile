@@ -27,4 +27,5 @@ RUN mkdir -p uploads/products
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main"]
+# Migraciones ya aplicadas en Neon vía setup-neon.sh — solo arrancar el API.
+CMD ["node", "dist/src/main"]
