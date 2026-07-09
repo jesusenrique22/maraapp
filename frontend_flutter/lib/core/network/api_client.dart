@@ -24,7 +24,7 @@ class ApiClient {
   final http.Client _client;
   String? _authToken;
 
-  static const Duration _defaultTimeout = Duration(seconds: 30);
+  static const Duration _defaultTimeout = Duration(seconds: 60);
   static const Duration _scanTimeout = Duration(seconds: 90);
 
   String get baseUrl => AppConfig.apiBaseUrl;

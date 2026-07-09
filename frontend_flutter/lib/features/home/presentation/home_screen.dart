@@ -440,6 +440,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.listen(selectedBranchProvider, (previous, next) {
       if (previous?.id != next?.id) {
         ref.invalidate(productsProvider(_query));
+        ref.invalidate(homeProductsProvider);
         ref.invalidate(featuredProductsProvider);
       }
     });
@@ -450,10 +451,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     });
 
+    ref.listen(homeProductsProvider, (previous, next) {
+      next.whenData((products) {
+        ref.read(cartProvider.notifier).syncStockFromCatalog(products);
+      });
+    });
+
     final cartItems = ref.watch(cartProvider);
     final cartCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
     final categoriesAsync = ref.watch(categoriesProvider);
     final productsAsync = ref.watch(productsProvider(_query));
+    final homeProductsAsync = ref.watch(homeProductsProvider);
+    final catalogAsync = _isFiltered ? productsAsync : homeProductsAsync;
     final heroBannersAsync = ref.watch(heroBannersProvider);
     final stripBannersAsync = ref.watch(stripBannersProvider);
     final featuredAsync = ref.watch(featuredProductsProvider);
@@ -487,6 +496,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ref.invalidate(categoriesProvider);
           ref.invalidate(branchesProvider);
           ref.invalidate(productsProvider(_query));
+          ref.invalidate(homeProductsProvider);
           ref.invalidate(heroBannersProvider);
           ref.invalidate(stripBannersProvider);
           ref.invalidate(featuredProductsProvider);
@@ -790,7 +800,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               // Secciones por categorías
               if (!_isFiltered)
-                productsAsync.when(
+                catalogAsync.when(
                   data: (products) {
                     final grouped = _groupByCategory(products);
                     final categoryColors = [
@@ -1009,7 +1019,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _refreshAll() {
     ref.invalidate(categoriesProvider);
     ref.invalidate(productsProvider(_query));
+    ref.invalidate(homeProductsProvider);
     ref.invalidate(heroBannersProvider);
+    ref.invalidate(stripBannersProvider);
     ref.invalidate(featuredProductsProvider);
   }
 }

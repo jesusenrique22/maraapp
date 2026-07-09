@@ -57,6 +57,43 @@ export class ProductsService {
     );
   }
 
+  /** Vista rápida del home: pocos productos por categoría (evita cargar miles). */
+  async findHomePreviewPublic(branchId?: string, perCategory = 8) {
+    const categories = await this.prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    });
+
+    const products = (
+      await Promise.all(
+        categories.map((category) =>
+          this.prisma.product.findMany({
+            where: {
+              isActive: true,
+              categoryId: category.id,
+              category: { isActive: true },
+            },
+            include: this.inventory.productInclude,
+            orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }],
+            take: perCategory,
+          }),
+        ),
+      )
+    ).flat();
+
+    const stockMap = await this.inventory.getStockMap(
+      products.map((p) => p.id),
+      branchId,
+    );
+
+    return products.map((product) =>
+      this.inventory.formatProduct(
+        { ...product, price: Number(product.price) },
+        stockMap.get(product.id) ?? 0,
+      ),
+    );
+  }
+
   async findFeaturedPublic(branchId?: string) {
     const products = await this.prisma.product.findMany({
       where: { isActive: true, isFeatured: true, category: { isActive: true } },

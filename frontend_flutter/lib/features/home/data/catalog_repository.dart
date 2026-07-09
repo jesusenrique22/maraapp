@@ -48,6 +48,16 @@ class CatalogRepository {
         .toList();
   }
 
+  Future<List<Product>> fetchHomeProducts({String? branchId}) async {
+    final data = await _api.getList(
+      '/products/home/list',
+      query: branchId == null ? null : {'branchId': branchId},
+    );
+    return data
+        .map((item) => Product.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<Product>> fetchFeatured({String? branchId}) async {
     final data = await _api.getList(
       '/products/featured/list',
@@ -85,6 +95,11 @@ final heroBannersProvider = FutureProvider<List<PromoBanner>>((ref) {
 
 final stripBannersProvider = FutureProvider<List<PromoBanner>>((ref) {
   return ref.watch(catalogRepositoryProvider).fetchBanners(placement: 'HOME_STRIP');
+});
+
+final homeProductsProvider = FutureProvider<List<Product>>((ref) {
+  final branchId = _resolveBranchId(ref);
+  return ref.watch(catalogRepositoryProvider).fetchHomeProducts(branchId: branchId);
 });
 
 final featuredProductsProvider = FutureProvider<List<Product>>((ref) {

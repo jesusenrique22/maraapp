@@ -19,6 +19,11 @@ export class ProductsController {
     return this.productsService.findFeaturedPublic(branchId);
   }
 
+  @Get('home/list')
+  findHomePreview(@Query('branchId') branchId?: string) {
+    return this.productsService.findHomePreviewPublic(branchId);
+  }
+
   @Get(':id/availability')
   getAvailability(@Param('id') id: string) {
     return this.productsService.getAvailability(id);

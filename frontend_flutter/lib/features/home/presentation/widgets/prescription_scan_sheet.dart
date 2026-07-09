@@ -316,28 +316,9 @@ class _PrescriptionScanSheetState extends ConsumerState<PrescriptionScanSheet> {
                 const SizedBox(height: 16),
                 Text(_error!, style: const TextStyle(color: MaraColors.rose), textAlign: TextAlign.center),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _pickGallery,
-                        icon: const Icon(Icons.photo_library_outlined),
-                        label: const Text('Galería'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _pickCamera,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: MaraColors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        icon: const Icon(Icons.camera_alt_rounded),
-                        label: const Text('Tomar foto'),
-                      ),
-                    ),
-                  ],
+                _ScanSourceButtons(
+                  onGallery: _pickGallery,
+                  onCamera: _pickCamera,
                 ),
               ] else if (_result == null) ...[
                 const SizedBox(height: 20),
@@ -370,28 +351,9 @@ class _PrescriptionScanSheetState extends ConsumerState<PrescriptionScanSheet> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _pickGallery,
-                        icon: const Icon(Icons.photo_library_outlined),
-                        label: const Text('Galería'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _pickCamera,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: MaraColors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        icon: const Icon(Icons.camera_alt_rounded),
-                        label: const Text('Tomar foto'),
-                      ),
-                    ),
-                  ],
+                _ScanSourceButtons(
+                  onGallery: _pickGallery,
+                  onCamera: _pickCamera,
                 ),
               ] else ...[
                 if (summary != null) ...[
@@ -485,6 +447,71 @@ class _PrescriptionScanSheetState extends ConsumerState<PrescriptionScanSheet> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ScanSourceButtons extends StatelessWidget {
+  const _ScanSourceButtons({
+    required this.onGallery,
+    required this.onCamera,
+  });
+
+  final VoidCallback onGallery;
+  final VoidCallback onCamera;
+
+  static const double _height = 48;
+
+  @override
+  Widget build(BuildContext context) {
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+    );
+
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: _height,
+            child: OutlinedButton.icon(
+              onPressed: onGallery,
+              icon: const Icon(Icons.photo_library_outlined, size: 20),
+              label: const Text('Galería', maxLines: 1, overflow: TextOverflow.ellipsis),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                shape: shape,
+                textStyle: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: SizedBox(
+            height: _height,
+            child: ElevatedButton.icon(
+              onPressed: onCamera,
+              icon: const Icon(Icons.camera_alt_rounded, size: 20),
+              label: const Text('Tomar foto', maxLines: 1, overflow: TextOverflow.ellipsis),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MaraColors.green,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                minimumSize: const Size.fromHeight(_height),
+                shape: shape,
+                textStyle: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
