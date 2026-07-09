@@ -3,7 +3,7 @@
 # 1. Crea la base en https://neon.tech (copia DATABASE_URL y DIRECT_URL)
 # 2. Sube el repo a GitHub
 # 3. Render → New → Blueprint → conecta el repo
-# 4. Pega DATABASE_URL, DIRECT_URL, GEMINI_API_KEY y ADMIN_PASSWORD en el dashboard
+# 4. Pega DATABASE_URL, DIRECT_URL, GEMINI_API_KEY, GEMINI_SCAN_API_KEY y ADMIN_PASSWORD
 # 5. Tras el primer deploy del API, redeploy "maraplus-web" si hace falta
 
 services:
@@ -32,8 +32,12 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_SCAN_API_KEY
+        sync: false
       - key: GEMINI_MODEL
         value: gemini-2.0-flash
+      - key: GEMINI_SCAN_MODEL
+        value: gemini-3.5-flash
       - key: PUBLIC_API_URL
         fromService:
           type: web

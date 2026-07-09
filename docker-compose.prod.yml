@@ -29,6 +29,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@maraplus.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin123!}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_SCAN_API_KEY: ${GEMINI_SCAN_API_KEY:-}
       RAPIDAPI_KEY: ${RAPIDAPI_KEY:-}
     volumes:
       - maraplus_uploads:/app/uploads

@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import {
   buildGeminiGenerateContentUrl,
+  getGeminiScanModel,
   readGeminiApiFailure,
   type GeminiApiFailure,
 } from './gemini.config';
@@ -29,7 +30,7 @@ export async function parsePrescriptionImageWithGemini(
 > {
   try {
     const base64 = imageBuffer.toString('base64');
-    const url = buildGeminiGenerateContentUrl(apiKey);
+    const url = buildGeminiGenerateContentUrl(apiKey, getGeminiScanModel());
 
     const response = await fetch(url, {
       method: 'POST',

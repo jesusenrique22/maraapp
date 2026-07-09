@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { InventoryService } from '../inventory/inventory.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UploadService } from '../upload/upload.service';
-import { userFacingGeminiError } from './gemini.config';
+import { resolveGeminiScanApiKey, userFacingGeminiError } from './gemini.config';
 import { parsePrescriptionImageWithGemini } from './prescription-gemini.parser';
 import { matchPrescriptionToInventory } from './prescription-inventory.matcher';
 import type { PrescriptionScanResponse } from './prescription-scan.types';
@@ -27,10 +27,10 @@ export class PrescriptionScanService {
   async scanFromUpload(file: Express.Multer.File): Promise<PrescriptionScanResponse> {
     this.uploadService.validateImage(file);
 
-    const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+    const apiKey = resolveGeminiScanApiKey(this.configService);
     if (!apiKey) {
       throw new ServiceUnavailableException(
-        'Escáner de recetas no configurado. Agrega GEMINI_API_KEY en el servidor.',
+        'Escáner de recetas no configurado. Agrega GEMINI_SCAN_API_KEY en el servidor.',
       );
     }
 

@@ -757,14 +757,14 @@ async function main() {
 
   const banners = [
     {
-      title: '15% en tu primera compra',
-      subtitle: 'Solo delivery · Válido hoy',
+      title: 'MaraPuntos: gana con cada compra',
+      subtitle: 'Próximamente · Suma puntos y canjéalos',
       imageUrl:
-        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
-      backgroundColor: '#1B3A8A',
+        'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=900&auto=format&fit=crop',
+      backgroundColor: '#7C3AED',
       textColor: '#FFFFFF',
-      badgeText: 'NUEVO',
-      buttonText: 'Ordenar ahora',
+      badgeText: 'PRÓXIMAMENTE',
+      buttonText: 'Conocer más',
       placement: BannerPlacement.HOME_HERO,
       sortOrder: 1,
     },
@@ -808,7 +808,10 @@ async function main() {
 
   for (const banner of banners) {
     const existing = await prisma.banner.findFirst({
-      where: { title: banner.title, placement: banner.placement },
+      where: {
+        placement: banner.placement,
+        sortOrder: banner.sortOrder,
+      },
     });
 
     if (existing) {
