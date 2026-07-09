@@ -1,5 +1,5 @@
 # Render: frontend Flutter (llama al API por URL externa, no proxy interno).
-# build: 2026-07-09-sin-marapuntos
+# build: 2026-07-09-con-marapuntos
 FROM ghcr.io/cirruslabs/flutter:stable AS flutter-build
 
 WORKDIR /app
