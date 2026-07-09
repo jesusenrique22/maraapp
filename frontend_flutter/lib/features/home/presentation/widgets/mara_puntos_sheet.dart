@@ -59,13 +59,13 @@ class _MaraPuntosSheetBody extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: MaraColors.amberLight,
+              color: MaraColors.greenLight,
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text(
-              'PRÓXIMAMENTE',
+              'ACTIVO',
               style: TextStyle(
-                color: Color(0xFFB45309),
+                color: MaraColors.greenDark,
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.2,
@@ -74,7 +74,7 @@ class _MaraPuntosSheetBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Estamos preparando un programa para que ganes en cada compra y te quedes con nosotros.',
+            '¡El club de beneficios ya está aquí! Haz tu primera compra y empieza a acumular puntos para canjear por increíbles descuentos.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: MaraColors.textSecondary,
@@ -85,18 +85,18 @@ class _MaraPuntosSheetBody extends StatelessWidget {
           const SizedBox(height: 20),
           const _BenefitRow(
             icon: Icons.shopping_bag_outlined,
-            title: 'Suma puntos',
-            subtitle: 'Por cada compra en farmacia, delivery y más',
+            title: 'Tu primera compra',
+            subtitle: '¡Recibe el doble de puntos en tu primer pedido!',
+          ),
+          const _BenefitRow(
+            icon: Icons.stars_rounded,
+            title: 'Suma MaraPuntos',
+            subtitle: 'Obtén 1 MaraPunto por cada \$1 de compra',
           ),
           const _BenefitRow(
             icon: Icons.redeem_outlined,
-            title: 'Canjea recompensas',
-            subtitle: 'Descuentos y beneficios exclusivos para ti',
-          ),
-          const _BenefitRow(
-            icon: Icons.favorite_outline_rounded,
-            title: 'Fidelízate con MaraPlus',
-            subtitle: 'Mientras más compras, más ganas',
+            title: 'Canjea descuentos',
+            subtitle: 'Usa tus puntos en el checkout para pagar menos',
           ),
           const SizedBox(height: 20),
           SizedBox(

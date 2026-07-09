@@ -5,9 +5,10 @@ import '../../domain/models/catalog_models.dart';
 import 'banner_carousel.dart';
 import 'delivery_info_strip.dart';
 import 'dog_plus_hero_slide.dart';
+import 'mara_puntos_hero_slide.dart';
 import 'medic_plus_hero_slide.dart';
 
-/// Carrusel unificado: Dog Plus, Medic Plus y banners del catálogo.
+/// Carrusel unificado: MaraPuntos, Dog Plus, Medic Plus y banners del catálogo.
 class HomeAdvertisingSection extends StatelessWidget {
   const HomeAdvertisingSection({
     super.key,
@@ -39,6 +40,7 @@ class HomeAdvertisingSection extends StatelessWidget {
     final delivery = _deliveryBanner();
 
     final leadingSlides = <Widget>[
+      const MaraPuntosHeroSlide(),
       const DogPlusHeroSlide(),
       MedicPlusHeroSlide(onTap: onMedicPlusTap),
     ];

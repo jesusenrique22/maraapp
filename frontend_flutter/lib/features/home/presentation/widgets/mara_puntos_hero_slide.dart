@@ -12,16 +12,16 @@ class MaraPuntosHeroSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return CompactHeroSlide(
       onTap: () => MaraPuntosSheet.show(context),
-      badge: 'PRÓXIMAMENTE',
-      title: 'MaraPuntos: gana con cada compra',
-      subtitle: 'Suma puntos y canjéalos por descuentos',
+      badge: 'CLUB MARAPLUS',
+      title: '¡Haz tu primera compra y suma puntos!',
+      subtitle: 'Acumula MaraPuntos para canjearlos por descuentos',
       colors: const [
         MaraColors.violet,
         Color(0xFF6D28D9),
         Color(0xFFDB2777),
       ],
       emoji: '⭐',
-      ctaLabel: 'Conocer más',
+      ctaLabel: 'Ver programa',
       ctaLeadingIcon: Icons.stars_rounded,
     );
   }
