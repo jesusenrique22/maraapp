@@ -757,14 +757,14 @@ async function main() {
 
   const banners = [
     {
-      title: 'MaraPuntos: gana con cada compra',
-      subtitle: 'Próximamente · Suma puntos y canjéalos',
+      title: '15% en tu primera compra',
+      subtitle: 'Solo delivery · Válido hoy',
       imageUrl:
-        'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=900&auto=format&fit=crop',
-      backgroundColor: '#7C3AED',
+        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
+      backgroundColor: '#1B3A8A',
       textColor: '#FFFFFF',
-      badgeText: 'PRÓXIMAMENTE',
-      buttonText: 'Conocer más',
+      badgeText: 'NUEVO',
+      buttonText: 'Ordenar ahora',
       placement: BannerPlacement.HOME_HERO,
       sortOrder: 1,
     },
