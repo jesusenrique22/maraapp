@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/mara_theme.dart';
 import '../../domain/models/catalog_models.dart';
 import 'banner_carousel.dart';
 import 'delivery_info_strip.dart';
@@ -14,11 +15,13 @@ class HomeAdvertisingSection extends StatelessWidget {
     required this.heroBanners,
     this.stripBanners = const [],
     required this.onMedicPlusTap,
+    this.bannersLoading = false,
   });
 
   final List<PromoBanner> heroBanners;
   final List<PromoBanner> stripBanners;
   final VoidCallback onMedicPlusTap;
+  final bool bannersLoading;
 
   PromoBanner? _deliveryBanner() {
     for (final banner in stripBanners) {
@@ -49,6 +52,17 @@ class HomeAdvertisingSection extends StatelessWidget {
           leadingSlides: leadingSlides,
           banners: heroBanners,
         ),
+        if (bannersLoading)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2, color: MaraColors.navyMid),
+              ),
+            ),
+          ),
         DeliveryInfoStrip(banner: delivery),
       ],
     );

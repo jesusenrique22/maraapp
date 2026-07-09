@@ -17,7 +17,6 @@ import '../../branches/providers/branches_provider.dart';
 import '../providers/cart_provider.dart';
 import 'widgets/account_tab_view.dart';
 import 'widgets/ai_chat_sheet.dart';
-import 'widgets/banner_carousel.dart';
 import 'widgets/category_chip_bar.dart';
 import 'widgets/checkout_sheet.dart';
 import 'widgets/home_advertising_section.dart';
@@ -761,22 +760,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20),
-                    child: heroBannersAsync.when(
-                      data: (hero) => stripBannersAsync.when(
-                        data: (strip) => HomeAdvertisingSection(
-                          heroBanners: hero,
-                          stripBanners: strip,
-                          onMedicPlusTap: _enterMedicPlus,
-                        ),
-                        loading: () => BannerCarousel(banners: hero),
-                        error: (_, __) => BannerCarousel(banners: hero),
-                      ),
-                      loading: () => const _ShimmerBlock(
-                        height: 196,
-                        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      ),
-                      error: (_, __) =>
-                          const SizedBox.shrink(),
+                    child: HomeAdvertisingSection(
+                      heroBanners: heroBannersAsync.valueOrNull ?? const [],
+                      stripBanners: stripBannersAsync.valueOrNull ?? const [],
+                      onMedicPlusTap: _enterMedicPlus,
+                      bannersLoading:
+                          heroBannersAsync.isLoading || stripBannersAsync.isLoading,
                     ),
                   ),
                 ),
