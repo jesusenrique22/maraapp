@@ -536,19 +536,85 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // ─── PESTAÑA 1: CATEGORÍAS DEDICADAS ───
             if (_currentTab == 1) ...[
               if (_selectedCategorySlug == null) ...[
-                // Cuadrícula principal de Categorías
+                // ── Hero banner de categorías ──
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-                    child: Text(
-                      'Descubre nuestras categorías',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: MaraColors.navy,
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF007A46),
+                          Color(0xFF00B96B),
+                        ],
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Icono flotante tenue
+                        Positioned(
+                          right: 16,
+                          bottom: 16,
+                          child: Icon(
+                            Icons.grid_view_outlined,
+                            size: 80,
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
+                        ),
+                        // Contenido principal
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'MaraPlus Farmacia',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Explora nuestras\ncategorías',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.15,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Todo lo que necesitas, en un solo lugar',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+
+                // ── Lista de categorías ──
                 categoriesAsync.when(
                   loading: () => const SliverFillRemaining(
                     hasScrollBody: false,
@@ -561,25 +627,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _ErrorState(error: error, onRetry: _refreshAll),
                   ),
                   data: (categories) => SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.92,
-                      ),
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+                    sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           final category = categories[index];
-                          return _CategoryGridCard(
-                            category: category,
-                            onTap: () {
-                              setState(() {
-                                _selectedCategorySlug = category.slug;
-                              });
-                            },
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _CategoryListCard(
+                              category: category,
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategorySlug = category.slug;
+                                });
+                              },
+                            ),
                           );
                         },
                         childCount: categories.length,
@@ -1016,10 +1078,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 // ─────────────────────────────────────────────
-//  TARJETA DEDICADA DE CATEGORÍAS (GRID)
+//  CATEGORY LIST CARD (nuevo diseño premium)
 // ─────────────────────────────────────────────
-class _CategoryGridCard extends StatelessWidget {
-  const _CategoryGridCard({
+class _CategoryListCard extends StatefulWidget {
+  const _CategoryListCard({
     required this.category,
     required this.onTap,
   });
@@ -1027,92 +1089,148 @@ class _CategoryGridCard extends StatelessWidget {
   final Category category;
   final VoidCallback onTap;
 
-  Color _colorForSlug(String slug) {
+  @override
+  State<_CategoryListCard> createState() => _CategoryListCardState();
+}
+
+class _CategoryListCardState extends State<_CategoryListCard> {
+  static Color _accentForSlug(String slug) {
     return switch (slug) {
-      'farmacia' => MaraColors.green,
-      'panaderia' => MaraColors.amber,
-      'mascotas' => MaraColors.violet,
+      'farmacia' => const Color(0xFF00A651),
+      'panaderia' => const Color(0xFFF59E0B),
+      'mascotas' => const Color(0xFF7C3AED),
+      'alimentos-bebidas' => const Color(0xFF2563EB),
       _ => MaraColors.navyMid,
+    };
+  }
+
+  static Color _bgForSlug(String slug) {
+    return switch (slug) {
+      'farmacia' => const Color(0xFFE6F9F1),
+      'panaderia' => const Color(0xFFFFF8E6),
+      'mascotas' => const Color(0xFFF3EEFF),
+      'alimentos-bebidas' => const Color(0xFFE8F0FF),
+      _ => const Color(0xFFF0F4FF),
+    };
+  }
+
+  static String _tagForSlug(String slug) {
+    return switch (slug) {
+      'farmacia' => 'Salud',
+      'panaderia' => 'Alimentación',
+      'mascotas' => 'Mascotas',
+      'alimentos-bebidas' => 'Mercado',
+      _ => 'Categoría',
     };
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = _colorForSlug(category.slug);
-    final icon = CategoryChipBar.iconForSlug(category.slug);
-    final gradient = CategoryChipBar.gradientForSlug(category.slug);
+    final slug = widget.category.slug;
+    final accent = _accentForSlug(slug);
+    final bg = _bgForSlug(slug);
+    final icon = CategoryChipBar.iconForSlug(slug);
+    final subtitle = widget.category.description ??
+        CategoryChipBar.subtitleForSlug(slug);
+    final tag = _tagForSlug(slug);
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
           color: Colors.white,
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: MaraShadows.card,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0A1628).withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(gradient: gradient),
-                child: Stack(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Icono container (limpio, contorno circular minimalista)
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                ),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    size: 24,
+                    color: accent,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Texto
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Positioned(
-                      right: -10,
-                      bottom: -10,
-                      child: Icon(
-                        icon,
-                        size: 72,
-                        color: Colors.white.withValues(alpha: 0.2),
+                    // Tag pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: bg,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        tag,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                     ),
-                    Center(
-                      child: Icon(icon, color: Colors.white, size: 40),
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.category.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: Color(0xFF0A1628),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: MaraColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    category.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                      color: color,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    category.description ??
-                        CategoryChipBar.subtitleForSlug(category.slug),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      height: 1.25,
-                      color: MaraColors.textSecondary,
-                    ),
-                  ),
-                ],
+              // Flecha (chevron clásico minimalista)
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 24,
+                color: Color(0xFF94A3B8),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 // ─────────────────────────────────────────────
 //  ERROR STATE

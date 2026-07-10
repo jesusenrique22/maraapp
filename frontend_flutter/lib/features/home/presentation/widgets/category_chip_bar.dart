@@ -18,11 +18,11 @@ class CategoryChipBar extends StatelessWidget {
 
   static IconData iconForSlug(String slug) {
     return switch (slug) {
-      'farmacia' => Icons.medication_liquid_rounded,
-      'panaderia' => Icons.bakery_dining_rounded,
-      'mascotas' => Icons.pets_rounded,
-      'alimentos-bebidas' => Icons.local_grocery_store_rounded,
-      _ => Icons.category_rounded,
+      'farmacia' => Icons.healing_outlined,
+      'panaderia' => Icons.bakery_dining_outlined,
+      'mascotas' => Icons.pets_outlined,
+      'alimentos-bebidas' => Icons.shopping_bag_outlined,
+      _ => Icons.grid_view_outlined,
     };
   }
 
