@@ -757,6 +757,18 @@ async function main() {
 
   const banners = [
     {
+      title: 'MaraPuntos: gana con cada compra',
+      subtitle: 'Próximamente · Suma puntos y canjéalos',
+      imageUrl:
+        'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=900&auto=format&fit=crop',
+      backgroundColor: '#7C3AED',
+      textColor: '#FFFFFF',
+      badgeText: 'PRÓXIMAMENTE',
+      buttonText: 'Conocer más',
+      placement: BannerPlacement.HOME_HERO,
+      sortOrder: 0,
+    },
+    {
       title: '15% en tu primera compra',
       subtitle: 'Solo delivery · Válido hoy',
       imageUrl:
@@ -781,14 +793,14 @@ async function main() {
       sortOrder: 2,
     },
     {
-      title: 'Delivery gratis',
-      subtitle: 'En compras mayores a \$20',
+      title: 'MaraPadel · Reserva tu cancha',
+      subtitle: 'Agenda tu partido · Próximamente en la app',
       imageUrl:
-        'https://images.unsplash.com/photo-1526367790999-015a178e6d9c?w=600&auto=format&fit=crop',
-      backgroundColor: '#009640',
+        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop',
+      backgroundColor: '#0284C7',
       textColor: '#FFFFFF',
-      badgeText: 'ENVÍO',
-      buttonText: 'Ver más',
+      badgeText: 'PRÓXIMAMENTE',
+      buttonText: 'Agendar',
       placement: BannerPlacement.HOME_STRIP,
       sortOrder: 1,
     },

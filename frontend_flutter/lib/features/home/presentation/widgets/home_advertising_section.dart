@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/mara_theme.dart';
 import '../../domain/models/catalog_models.dart';
 import 'banner_carousel.dart';
-import 'delivery_info_strip.dart';
 import 'dog_plus_hero_slide.dart';
 import 'mara_puntos_hero_slide.dart';
 import 'medic_plus_hero_slide.dart';
+import 'padel_info_strip.dart';
 
-/// Carrusel unificado: MaraPuntos, Dog Plus, Medic Plus y banners del catálogo.
+/// Carrusel unificado: MaraPuntos, Dog Plus, Medic Plus + strip de pádel.
 class HomeAdvertisingSection extends StatelessWidget {
   const HomeAdvertisingSection({
     super.key,
@@ -23,12 +23,13 @@ class HomeAdvertisingSection extends StatelessWidget {
   final VoidCallback onMedicPlusTap;
   final bool bannersLoading;
 
-  PromoBanner? _deliveryBanner() {
+  PromoBanner? _padelBanner() {
     for (final banner in stripBanners) {
       final text = '${banner.title} ${banner.subtitle ?? ''}'.toLowerCase();
-      if (text.contains('delivery') ||
-          text.contains('envío') ||
-          text.contains('envio')) {
+      if (text.contains('padel') ||
+          text.contains('pádel') ||
+          text.contains('cancha') ||
+          text.contains('agenda')) {
         return banner;
       }
     }
@@ -37,7 +38,7 @@ class HomeAdvertisingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final delivery = _deliveryBanner();
+    final padel = _padelBanner();
 
     final leadingSlides = <Widget>[
       const MaraPuntosHeroSlide(),
@@ -45,6 +46,7 @@ class HomeAdvertisingSection extends StatelessWidget {
       MedicPlusHeroSlide(onTap: onMedicPlusTap),
     ];
 
+    // Evita duplicar MaraPuntos si también viene desde la API.
     final heroBanners = this.heroBanners
         .where((b) => !b.title.toLowerCase().contains('marapuntos'))
         .toList();
@@ -63,11 +65,14 @@ class HomeAdvertisingSection extends StatelessWidget {
               child: SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2, color: MaraColors.navyMid),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: MaraColors.navyMid,
+                ),
               ),
             ),
           ),
-        DeliveryInfoStrip(banner: delivery),
+        PadelInfoStrip(banner: padel),
       ],
     );
   }
