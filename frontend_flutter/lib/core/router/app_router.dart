@@ -10,6 +10,7 @@ import '../../features/admin/presentation/admin_doctors_screen.dart';
 import '../../features/admin/presentation/admin_edit_product_screen.dart';
 import '../../features/admin/presentation/admin_patients_screen.dart';
 import '../../features/admin/presentation/admin_products_screen.dart';
+import '../../features/admin/presentation/admin_stats_screen.dart';
 import '../../features/admin/providers/admin_providers.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
@@ -158,6 +159,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin',
         builder: (context, state) => const AdminDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/admin/stats',
+        builder: (context, state) => const AdminStatsScreen(),
       ),
       GoRoute(
         path: '/admin/products',

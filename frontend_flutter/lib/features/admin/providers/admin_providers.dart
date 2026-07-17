@@ -215,6 +215,15 @@ final adminStatsProvider = FutureProvider<AdminStats>((ref) async {
   return ref.watch(adminRepositoryProvider).fetchStats();
 });
 
+final adminSalesPeriodProvider = StateProvider<int>((ref) => 30);
+
+final adminSalesDashboardProvider =
+    FutureProvider<AdminSalesDashboard>((ref) async {
+  ref.watch(adminAuthProvider);
+  final days = ref.watch(adminSalesPeriodProvider);
+  return ref.watch(adminRepositoryProvider).fetchSalesDashboard(days: days);
+});
+
 final adminProductsProvider = FutureProvider<List<Product>>((ref) async {
   ref.watch(adminAuthProvider);
   return ref.watch(adminRepositoryProvider).fetchProducts();

@@ -52,6 +52,271 @@ class AdminStats {
   final bool apiOnline;
 }
 
+class AdminSalesDashboard {
+  const AdminSalesDashboard({
+    required this.periodDays,
+    required this.from,
+    required this.catalog,
+    required this.kpis,
+    required this.salesByDay,
+    required this.byStatus,
+    required this.byFulfillment,
+    required this.byBranch,
+    required this.topProducts,
+    required this.lowStock,
+    required this.funnel,
+    required this.insights,
+  });
+
+  factory AdminSalesDashboard.fromJson(Map<String, dynamic> json) {
+    return AdminSalesDashboard(
+      periodDays: (json['periodDays'] as num?)?.toInt() ?? 30,
+      from: json['from'] as String? ?? '',
+      catalog: AdminSalesCatalog.fromJson(
+        json['catalog'] as Map<String, dynamic>? ?? const {},
+      ),
+      kpis: AdminSalesKpis.fromJson(
+        json['kpis'] as Map<String, dynamic>? ?? const {},
+      ),
+      salesByDay: ((json['salesByDay'] as List<dynamic>?) ?? [])
+          .map((e) => AdminSalesDay.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      byStatus: ((json['byStatus'] as List<dynamic>?) ?? [])
+          .map((e) => AdminStatusCount.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      byFulfillment: ((json['byFulfillment'] as List<dynamic>?) ?? [])
+          .map((e) => AdminFulfillmentCount.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      byBranch: ((json['byBranch'] as List<dynamic>?) ?? [])
+          .map((e) => AdminBranchSales.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      topProducts: ((json['topProducts'] as List<dynamic>?) ?? [])
+          .map((e) => AdminTopProduct.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      lowStock: ((json['lowStock'] as List<dynamic>?) ?? [])
+          .map((e) => AdminLowStockProduct.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      funnel: AdminSalesFunnel.fromJson(
+        json['funnel'] as Map<String, dynamic>? ?? const {},
+      ),
+      insights: ((json['insights'] as List<dynamic>?) ?? [])
+          .map((e) => e.toString())
+          .toList(),
+    );
+  }
+
+  final int periodDays;
+  final String from;
+  final AdminSalesCatalog catalog;
+  final AdminSalesKpis kpis;
+  final List<AdminSalesDay> salesByDay;
+  final List<AdminStatusCount> byStatus;
+  final List<AdminFulfillmentCount> byFulfillment;
+  final List<AdminBranchSales> byBranch;
+  final List<AdminTopProduct> topProducts;
+  final List<AdminLowStockProduct> lowStock;
+  final AdminSalesFunnel funnel;
+  final List<String> insights;
+}
+
+class AdminSalesCatalog {
+  const AdminSalesCatalog({
+    required this.products,
+    required this.banners,
+    required this.doctors,
+    required this.patients,
+    required this.branches,
+  });
+
+  factory AdminSalesCatalog.fromJson(Map<String, dynamic> json) {
+    return AdminSalesCatalog(
+      products: (json['products'] as num?)?.toInt() ?? 0,
+      banners: (json['banners'] as num?)?.toInt() ?? 0,
+      doctors: (json['doctors'] as num?)?.toInt() ?? 0,
+      patients: (json['patients'] as num?)?.toInt() ?? 0,
+      branches: (json['branches'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final int products;
+  final int banners;
+  final int doctors;
+  final int patients;
+  final int branches;
+}
+
+class AdminSalesKpis {
+  const AdminSalesKpis({
+    required this.revenue,
+    required this.orders,
+    required this.averageTicket,
+    required this.cancelRate,
+    required this.revenueDeltaPct,
+  });
+
+  factory AdminSalesKpis.fromJson(Map<String, dynamic> json) {
+    return AdminSalesKpis(
+      revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+      averageTicket: (json['averageTicket'] as num?)?.toDouble() ?? 0,
+      cancelRate: (json['cancelRate'] as num?)?.toDouble() ?? 0,
+      revenueDeltaPct: (json['revenueDeltaPct'] as num?)?.toDouble() ?? 0,
+    );
+  }
+
+  final double revenue;
+  final int orders;
+  final double averageTicket;
+  final double cancelRate;
+  final double revenueDeltaPct;
+}
+
+class AdminSalesDay {
+  const AdminSalesDay({
+    required this.date,
+    required this.revenue,
+    required this.orders,
+  });
+
+  factory AdminSalesDay.fromJson(Map<String, dynamic> json) {
+    return AdminSalesDay(
+      date: json['date'] as String? ?? '',
+      revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final String date;
+  final double revenue;
+  final int orders;
+}
+
+class AdminStatusCount {
+  const AdminStatusCount({required this.status, required this.count});
+
+  factory AdminStatusCount.fromJson(Map<String, dynamic> json) {
+    return AdminStatusCount(
+      status: json['status'] as String? ?? '',
+      count: (json['count'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final String status;
+  final int count;
+}
+
+class AdminFulfillmentCount {
+  const AdminFulfillmentCount({required this.type, required this.count});
+
+  factory AdminFulfillmentCount.fromJson(Map<String, dynamic> json) {
+    return AdminFulfillmentCount(
+      type: json['type'] as String? ?? '',
+      count: (json['count'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final String type;
+  final int count;
+}
+
+class AdminBranchSales {
+  const AdminBranchSales({
+    required this.name,
+    required this.revenue,
+    required this.orders,
+  });
+
+  factory AdminBranchSales.fromJson(Map<String, dynamic> json) {
+    return AdminBranchSales(
+      name: json['name'] as String? ?? '',
+      revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final String name;
+  final double revenue;
+  final int orders;
+}
+
+class AdminTopProduct {
+  const AdminTopProduct({
+    required this.productId,
+    required this.name,
+    required this.sku,
+    required this.unitsSold,
+    required this.revenue,
+  });
+
+  factory AdminTopProduct.fromJson(Map<String, dynamic> json) {
+    return AdminTopProduct(
+      productId: json['productId'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      sku: json['sku'] as String? ?? '',
+      unitsSold: (json['unitsSold'] as num?)?.toInt() ?? 0,
+      revenue: (json['revenue'] as num?)?.toDouble() ?? 0,
+    );
+  }
+
+  final String productId;
+  final String name;
+  final String sku;
+  final int unitsSold;
+  final double revenue;
+}
+
+class AdminLowStockProduct {
+  const AdminLowStockProduct({
+    required this.id,
+    required this.name,
+    required this.sku,
+    required this.stock,
+  });
+
+  factory AdminLowStockProduct.fromJson(Map<String, dynamic> json) {
+    return AdminLowStockProduct(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      sku: json['sku'] as String? ?? '',
+      stock: (json['stock'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final String id;
+  final String name;
+  final String sku;
+  final int stock;
+}
+
+class AdminSalesFunnel {
+  const AdminSalesFunnel({
+    required this.catalogProducts,
+    required this.customers,
+    required this.ordersCreated,
+    required this.ordersSold,
+    required this.delivered,
+    required this.cancelled,
+  });
+
+  factory AdminSalesFunnel.fromJson(Map<String, dynamic> json) {
+    return AdminSalesFunnel(
+      catalogProducts: (json['catalogProducts'] as num?)?.toInt() ?? 0,
+      customers: (json['customers'] as num?)?.toInt() ?? 0,
+      ordersCreated: (json['ordersCreated'] as num?)?.toInt() ?? 0,
+      ordersSold: (json['ordersSold'] as num?)?.toInt() ?? 0,
+      delivered: (json['delivered'] as num?)?.toInt() ?? 0,
+      cancelled: (json['cancelled'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  final int catalogProducts;
+  final int customers;
+  final int ordersCreated;
+  final int ordersSold;
+  final int delivered;
+  final int cancelled;
+}
+
 class CreateProductInput {
   const CreateProductInput({
     required this.sku,

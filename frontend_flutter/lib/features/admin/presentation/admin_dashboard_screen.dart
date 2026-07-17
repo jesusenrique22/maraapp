@@ -118,6 +118,13 @@ List<AdminDirectoryItem> _directoryItems(
 ) {
   return [
     AdminDirectoryItem(
+      title: 'Estadísticas',
+      subtitle: 'Ventas, flujo y recomendaciones',
+      count: 'Live',
+      icon: Icons.insights_outlined,
+      onTap: () => context.go('/admin/stats'),
+    ),
+    AdminDirectoryItem(
       title: 'Productos',
       subtitle: 'Catálogo, precios e inventario',
       count: _formatCount(stats.products),

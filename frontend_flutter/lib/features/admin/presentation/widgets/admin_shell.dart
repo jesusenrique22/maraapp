@@ -125,6 +125,7 @@ class AdminShell extends ConsumerWidget {
                       padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
                       children: [
                         _MobileMenuItem(label: 'Inicio', onTap: () { Navigator.pop(context); context.go('/admin'); }),
+                        _MobileMenuItem(label: 'Estadísticas', onTap: () { Navigator.pop(context); context.go('/admin/stats'); }),
                         _MobileMenuItem(label: 'Productos', onTap: () { Navigator.pop(context); context.go('/admin/products'); }),
                         _MobileMenuItem(label: 'Nuevo producto', onTap: () { Navigator.pop(context); context.go('/admin/products/new'); }),
                         _MobileMenuItem(label: 'Publicidad', onTap: () { Navigator.pop(context); context.go('/admin/banners'); }),
@@ -290,7 +291,10 @@ class _AdminBottomNav extends StatelessWidget {
               ),
               _BottomNavItem(
                 label: 'Más',
-                selected: currentIndex == 3 || currentIndex == 4 || currentIndex == 5,
+                selected: currentIndex == 3 ||
+                    currentIndex == 4 ||
+                    currentIndex == 5 ||
+                    currentIndex == 6,
                 onTap: () => onDestinationSelected(3),
               ),
             ],
@@ -376,6 +380,7 @@ class _AdminSidebar extends StatelessWidget {
               const MaraLogo(height: 34, dark: false),
               const SizedBox(height: 32),
               _NavItem(icon: Icons.home_outlined, label: 'Inicio', selected: currentIndex == 0, onTap: () => context.go('/admin')),
+              _NavItem(icon: Icons.insights_outlined, label: 'Estadísticas', selected: currentIndex == 6, onTap: () => context.go('/admin/stats')),
               _NavItem(icon: Icons.inventory_2_outlined, label: 'Productos', selected: currentIndex == 1, onTap: () => context.go('/admin/products')),
               _NavItem(icon: Icons.campaign_outlined, label: 'Publicidad', selected: currentIndex == 2, onTap: () => context.go('/admin/banners')),
               _NavItem(icon: Icons.medical_services_outlined, label: 'Médicos', selected: currentIndex == 3, onTap: () => context.go('/admin/doctors')),

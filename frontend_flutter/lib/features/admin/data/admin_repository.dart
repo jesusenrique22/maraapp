@@ -79,6 +79,14 @@ class AdminRepository {
     }
   }
 
+  Future<AdminSalesDashboard> fetchSalesDashboard({int days = 30}) async {
+    final response = await _api.getMap(
+      '/admin/stats',
+      query: {'days': '$days'},
+    );
+    return AdminSalesDashboard.fromJson(response);
+  }
+
   Future<List<Product>> fetchProducts() async {
     final data = await _api.getList('/admin/products');
     return data
