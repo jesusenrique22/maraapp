@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/mara_theme.dart';
 
-/// Flujo de reserva de cancha de pádel.
+/// Reserva de pádel a pantalla completa.
 class PadelBookingSheet {
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const _PadelBookingSheetBody(),
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => const PadelBookingScreen(),
+      ),
     );
   }
 }
 
-class _PadelBookingSheetBody extends StatefulWidget {
-  const _PadelBookingSheetBody();
+class PadelBookingScreen extends StatefulWidget {
+  const PadelBookingScreen({super.key});
 
   @override
-  State<_PadelBookingSheetBody> createState() => _PadelBookingSheetBodyState();
+  State<PadelBookingScreen> createState() => _PadelBookingScreenState();
 }
 
-class _PadelBookingSheetBodyState extends State<_PadelBookingSheetBody> {
+class _PadelBookingScreenState extends State<PadelBookingScreen> {
   static const _courts = [
     'Cancha 1 · Cubierta',
     'Cancha 2 · Exterior',
@@ -110,204 +110,261 @@ class _PadelBookingSheetBodyState extends State<_PadelBookingSheetBody> {
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.paddingOf(context).bottom;
-
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.92,
-      ),
-      margin: EdgeInsets.fromLTRB(12, 0, 12, 12 + bottom),
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.close_rounded, color: MaraColors.textPrimary),
+        ),
+        title: const Text(
+          'Reservar pádel',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: MaraColors.textPrimary,
+            fontSize: 18,
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE0F2FE),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.sports_tennis_rounded,
-                  color: Color(0xFF0284C7),
-                  size: 26,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Reservar pádel',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: MaraColors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Elige cancha, día y horario',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: MaraColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close_rounded),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (_confirmed)
-            _SuccessBlock(
-              court: _courts[_courtIndex],
-              dateLabel: _dateLabel,
-              slot: _slots[_slotIndex],
-              onClose: () => Navigator.pop(context),
-            )
-          else
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const _SectionLabel('Cancha'),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: List.generate(_courts.length, (i) {
-                        final selected = _courtIndex == i;
-                        return ChoiceChip(
-                          label: Text(_courts[i]),
-                          selected: selected,
-                          onSelected: (_) => setState(() => _courtIndex = i),
-                          selectedColor: const Color(0xFF0284C7),
-                          labelStyle: TextStyle(
-                            color:
-                                selected ? Colors.white : MaraColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                          ),
-                          backgroundColor: const Color(0xFFF8FAFC),
-                          side: BorderSide(
-                            color: selected
-                                ? const Color(0xFF0284C7)
-                                : const Color(0xFFE2E8F0),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 18),
-                    const _SectionLabel('Día'),
-                    const SizedBox(height: 8),
-                    InkWell(
-                      onTap: _pickDate,
-                      borderRadius: BorderRadius.circular(14),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 14,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_month_rounded,
-                              color: Color(0xFF0284C7),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: _confirmed
+            ? _SuccessView(
+                court: _courts[_courtIndex],
+                dateLabel: _dateLabel,
+                slot: _slots[_slotIndex],
+                onClose: () => Navigator.pop(context),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFF0284C7),
+                                  Color(0xFF0369A1),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(22),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                _dateLabel,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: MaraColors.textPrimary,
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.sports_tennis_rounded,
+                                  color: Colors.white,
+                                  size: 36,
+                                ),
+                                SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'MaraPadel',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Elige cancha, día y horario para tu partido',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 13,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          const _SectionLabel('Cancha'),
+                          const SizedBox(height: 12),
+                          ...List.generate(_courts.length, (i) {
+                            final selected = _courtIndex == i;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: InkWell(
+                                onTap: () => setState(() => _courtIndex = i),
+                                borderRadius: BorderRadius.circular(16),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: selected
+                                        ? const Color(0xFFE0F2FE)
+                                        : const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: selected
+                                          ? const Color(0xFF0284C7)
+                                          : const Color(0xFFE2E8F0),
+                                      width: selected ? 1.5 : 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        selected
+                                            ? Icons.radio_button_checked
+                                            : Icons.radio_button_off,
+                                        color: selected
+                                            ? const Color(0xFF0284C7)
+                                            : MaraColors.textTertiary,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          _courts[i],
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15,
+                                            color: selected
+                                                ? const Color(0xFF0284C7)
+                                                : MaraColors.textPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Text(
-                              'Cambiar',
-                              style: TextStyle(
-                                color: Color(0xFF0284C7),
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                            );
+                          }),
+                          const SizedBox(height: 18),
+                          const _SectionLabel('Día'),
+                          const SizedBox(height: 12),
+                          InkWell(
+                            onTap: _pickDate,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_month_rounded,
+                                    color: Color(0xFF0284C7),
+                                    size: 26,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _dateLabel,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 16,
+                                        color: MaraColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Cambiar',
+                                    style: TextStyle(
+                                      color: Color(0xFF0284C7),
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 24),
+                          const _SectionLabel('Horario'),
+                          const SizedBox(height: 12),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _slots.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 2.8,
+                            ),
+                            itemBuilder: (context, i) {
+                              final selected = _slotIndex == i;
+                              return InkWell(
+                                onTap: () => setState(() => _slotIndex = i),
+                                borderRadius: BorderRadius.circular(14),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: selected
+                                        ? MaraColors.green
+                                        : const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: selected
+                                          ? MaraColors.green
+                                          : const Color(0xFFE2E8F0),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _slots[i],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                      color: selected
+                                          ? Colors.white
+                                          : MaraColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    const _SectionLabel('Horario'),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: List.generate(_slots.length, (i) {
-                        final selected = _slotIndex == i;
-                        return ChoiceChip(
-                          label: Text(_slots[i]),
-                          selected: selected,
-                          onSelected: (_) => setState(() => _slotIndex = i),
-                          selectedColor: MaraColors.green,
-                          labelStyle: TextStyle(
-                            color:
-                                selected ? Colors.white : MaraColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                          ),
-                          backgroundColor: const Color(0xFFF8FAFC),
-                          side: BorderSide(
-                            color: selected
-                                ? MaraColors.green
-                                : const Color(0xFFE2E8F0),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 22),
-                    SizedBox(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                    child: SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 54,
                       child: FilledButton(
                         onPressed: _submitting ? null : _confirm,
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xFF0284C7),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
                         child: _submitting
                             ? const SizedBox(
-                                width: 22,
-                                height: 22,
+                                width: 24,
+                                height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.4,
                                   color: Colors.white,
@@ -317,16 +374,14 @@ class _PadelBookingSheetBodyState extends State<_PadelBookingSheetBody> {
                                 'Confirmar reserva',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
-                                  fontSize: 15,
+                                  fontSize: 16,
                                 ),
                               ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-        ],
       ),
     );
   }
@@ -342,16 +397,16 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       text,
       style: const TextStyle(
-        fontWeight: FontWeight.w800,
-        fontSize: 13,
+        fontWeight: FontWeight.w900,
+        fontSize: 15,
         color: MaraColors.textPrimary,
       ),
     );
   }
 }
 
-class _SuccessBlock extends StatelessWidget {
-  const _SuccessBlock({
+class _SuccessView extends StatelessWidget {
+  const _SuccessView({
     required this.court,
     required this.dateLabel,
     required this.slot,
@@ -366,11 +421,12 @@ class _SuccessBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.fromLTRB(28, 40, 28, 28),
       child: Column(
         children: [
+          const Spacer(),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(22),
             decoration: const BoxDecoration(
               color: MaraColors.greenLight,
               shape: BoxShape.circle,
@@ -378,43 +434,47 @@ class _SuccessBlock extends StatelessWidget {
             child: const Icon(
               Icons.check_rounded,
               color: MaraColors.greenDark,
-              size: 36,
+              size: 48,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           const Text(
             '¡Reserva lista!',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 28,
               fontWeight: FontWeight.w900,
               color: MaraColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             '$court\n$dateLabel · $slot',
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: MaraColors.textSecondary,
-              height: 1.4,
+              fontSize: 16,
+              height: 1.45,
             ),
           ),
-          const SizedBox(height: 20),
+          const Spacer(),
           SizedBox(
             width: double.infinity,
+            height: 54,
             child: FilledButton(
               onPressed: onClose,
               style: FilledButton.styleFrom(
                 backgroundColor: MaraColors.green,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
               child: const Text(
                 'Listo',
-                style: TextStyle(fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
