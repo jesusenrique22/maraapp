@@ -1,102 +1,87 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/mara_theme.dart';
-import '../../domain/models/catalog_models.dart';
+import 'padel_booking_sheet.dart';
 
-/// Franja de pádel — reserva de cancha (próximamente).
+/// Franja fija de pádel — abre el flujo de reserva al tocar.
 class PadelInfoStrip extends StatelessWidget {
-  const PadelInfoStrip({super.key, this.banner, this.onTap});
-
-  final PromoBanner? banner;
-  final VoidCallback? onTap;
+  const PadelInfoStrip({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final title = banner?.title ?? 'MaraPadel · Reserva tu cancha';
-    final subtitle =
-        banner?.subtitle ?? 'Agenda tu partido · Próximamente en la app';
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        elevation: 0,
+        child: InkWell(
+          onTap: () => PadelBookingSheet.show(context),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: MaraColors.navy.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: MaraColors.navy.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.sports_tennis_rounded,
-                color: Color(0xFF0284C7),
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13.5,
-                      color: MaraColors.textPrimary,
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0EA5E9).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.sports_tennis_rounded,
+                      color: Color(0xFF0284C7),
+                      size: 22,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: MaraColors.textSecondary,
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Reservar pádel',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13.5,
+                            color: MaraColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Agenda tu cancha · Elige día y hora',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: MaraColors.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: MaraColors.textTertiary.withValues(alpha: 0.8),
+                    size: 22,
                   ),
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: MaraColors.amberLight,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'PRÓX.',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFFB45309),
-                  letterSpacing: 0.6,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: MaraColors.textTertiary.withValues(alpha: 0.8),
-              size: 22,
-            ),
-          ],
+          ),
         ),
       ),
     );

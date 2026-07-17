@@ -23,23 +23,8 @@ class HomeAdvertisingSection extends StatelessWidget {
   final VoidCallback onMedicPlusTap;
   final bool bannersLoading;
 
-  PromoBanner? _padelBanner() {
-    for (final banner in stripBanners) {
-      final text = '${banner.title} ${banner.subtitle ?? ''}'.toLowerCase();
-      if (text.contains('padel') ||
-          text.contains('pádel') ||
-          text.contains('cancha') ||
-          text.contains('agenda')) {
-        return banner;
-      }
-    }
-    return stripBanners.isNotEmpty ? stripBanners.first : null;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final padel = _padelBanner();
-
     final leadingSlides = <Widget>[
       const MaraPuntosHeroSlide(),
       const DogPlusHeroSlide(),
@@ -72,7 +57,7 @@ class HomeAdvertisingSection extends StatelessWidget {
               ),
             ),
           ),
-        PadelInfoStrip(banner: padel),
+        const PadelInfoStrip(),
       ],
     );
   }
