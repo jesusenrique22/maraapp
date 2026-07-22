@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/mara_theme.dart';
 import '../../domain/models/catalog_models.dart';
 import 'banner_carousel.dart';
-import 'dog_plus_hero_slide.dart';
+import 'cashea_hero_slide.dart';
 import 'mara_puntos_hero_slide.dart';
 import 'medic_plus_hero_slide.dart';
-import 'padel_info_strip.dart';
 
-/// Carrusel unificado: MaraPuntos, Dog Plus, Medic Plus + strip de pádel.
+/// Carrusel Farma Express: Cashea + Club + Medic Plus + banners del catálogo.
 class HomeAdvertisingSection extends StatelessWidget {
   const HomeAdvertisingSection({
     super.key,
@@ -26,14 +25,25 @@ class HomeAdvertisingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final leadingSlides = <Widget>[
+      const CasheaHeroSlide(),
       const MaraPuntosHeroSlide(),
-      const DogPlusHeroSlide(),
       MedicPlusHeroSlide(onTap: onMedicPlusTap),
     ];
 
-    // Evita duplicar MaraPuntos si también viene desde la API.
     final heroBanners = this.heroBanners
-        .where((b) => !b.title.toLowerCase().contains('marapuntos'))
+        .where((b) {
+          final t = b.title.toLowerCase();
+          // Evitar duplicar Cashea / club si ya van en leading
+          return !t.contains('marapuntos') &&
+              !t.contains('club farma') &&
+              !t.contains('cashea') &&
+              !t.contains('medic plus') &&
+              !t.contains('medicplus') &&
+              !t.contains('dog plus') &&
+              !t.contains('padel') &&
+              !t.contains('pádel') &&
+              !t.contains('prueba');
+        })
         .toList();
 
     return Column(
@@ -52,12 +62,11 @@ class HomeAdvertisingSection extends StatelessWidget {
                 height: 18,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: MaraColors.navyMid,
+                  color: MaraColors.green,
                 ),
               ),
             ),
           ),
-        const PadelInfoStrip(),
       ],
     );
   }

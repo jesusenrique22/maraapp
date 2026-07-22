@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/config/brand_config.dart';
+import '../../../../core/theme/mara_theme.dart';
 import 'compact_hero_slide.dart';
 
-/// Slide de Medic Plus — mismo formato que el resto del carrusel.
+/// Slide de Medic Plus — naranja Farma Express.
 class MedicPlusHeroSlide extends StatelessWidget {
   const MedicPlusHeroSlide({super.key, required this.onTap});
 
@@ -12,13 +14,13 @@ class MedicPlusHeroSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return CompactHeroSlide(
       onTap: onTap,
-      badge: 'NUEVO SERVICIO',
-      title: 'Medic Plus: Consultas Online',
-      subtitle: 'Videollamada con especialistas y receta digital',
+      badge: BrandConfig.medicPlusName.toUpperCase(),
+      title: 'Medic Plus: consulta desde Farma Express',
+      subtitle: BrandConfig.medicPlusSubtitle,
       colors: const [
-        Color(0xFF1976D2),
-        Color(0xFF0D47A1),
-        Color(0xFF0D3468),
+        MaraColors.green,
+        MaraColors.greenDark,
+        Color(0xFFCC4A00),
       ],
       emoji: '👨‍⚕️',
       ctaLabel: 'Consultar ahora',

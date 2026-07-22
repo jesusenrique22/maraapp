@@ -3,12 +3,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/mara_theme.dart';
 
-/// Tokens visuales suaves del panel admin — un solo acento (verde Mara).
+/// Tokens visuales del panel Super Admin — acento naranja Farma Express.
 class AdminSoft {
-  static const background = Color(0xFFF7F8FA);
+  static const background = Color(0xFFF8F7F5);
   static const surface = Colors.white;
-  static const tintGreen = Color(0xFFEEFBF4);
-  static const tintBlue = Color(0xFFF3F6FC);
+  static const tintGreen = Color(0xFFFFF1E6);
+  static const tintBlue = Color(0xFFFFF7F2);
+  static const tintDeep = Color(0xFFFFEDE0);
 
   static BoxDecoration cardDecoration({double radius = 14}) => BoxDecoration(
         color: surface,
@@ -16,7 +17,7 @@ class AdminSoft {
         border: Border.all(color: MaraColors.textPrimary.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
-            color: MaraColors.navy.withValues(alpha: 0.035),
+            color: MaraColors.navy.withValues(alpha: 0.04),
             blurRadius: 24,
             offset: const Offset(0, 6),
           ),
@@ -27,20 +28,34 @@ class AdminSoft {
     gradient: const LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [tintGreen, tintBlue],
+      colors: [Color(0xFFFFE8D6), Color(0xFFFFF7F2), Color(0xFFFFF0E6)],
     ),
-    borderRadius: BorderRadius.circular(16),
-    border: Border.all(color: MaraColors.green.withValues(alpha: 0.12)),
+    borderRadius: BorderRadius.circular(18),
+    border: Border.all(color: MaraColors.green.withValues(alpha: 0.18)),
+    boxShadow: [
+      BoxShadow(
+        color: MaraColors.green.withValues(alpha: 0.08),
+        blurRadius: 20,
+        offset: const Offset(0, 8),
+      ),
+    ],
   );
 
   static BoxDecoration metricTile = BoxDecoration(
     color: surface,
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(14),
     border: Border.all(color: MaraColors.textPrimary.withValues(alpha: 0.05)),
+    boxShadow: [
+      BoxShadow(
+        color: MaraColors.navy.withValues(alpha: 0.03),
+        blurRadius: 12,
+        offset: const Offset(0, 4),
+      ),
+    ],
   );
 
   static BoxDecoration iconWell = BoxDecoration(
-    color: MaraColors.green.withValues(alpha: 0.08),
+    color: MaraColors.green.withValues(alpha: 0.12),
     borderRadius: BorderRadius.circular(10),
   );
 }
@@ -79,35 +94,38 @@ class AdminMetricBand extends StatelessWidget {
   Widget build(BuildContext context) {
     final narrow = MediaQuery.sizeOf(context).width < 560;
 
-    if (narrow) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: metrics.map((metric) {
-            return SizedBox(
-              width: (MediaQuery.sizeOf(context).width - horizontalPadding(context) - 10) / 2,
-              child: _metricTile(metric),
-            );
-          }).toList(),
-        ),
-      );
-    }
+    // LayoutBuilder: el ancho real del contenido (no el del viewport con sidebar/DevTools)
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
 
-    return Row(
-      children: [
-        for (var i = 0; i < metrics.length; i++) ...[
-          if (i > 0) const SizedBox(width: 10),
-          Expanded(child: _metricTile(metrics[i])),
-        ],
-      ],
+        if (narrow || maxW < 560) {
+          final tileW = ((maxW - 10) / 2).clamp(120.0, maxW);
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: metrics.map((metric) {
+                return SizedBox(
+                  width: tileW,
+                  child: _metricTile(metric),
+                );
+              }).toList(),
+            ),
+          );
+        }
+
+        return Row(
+          children: [
+            for (var i = 0; i < metrics.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              Expanded(child: _metricTile(metrics[i])),
+            ],
+          ],
+        );
+      },
     );
-  }
-
-  double horizontalPadding(BuildContext context) {
-    final w = MediaQuery.sizeOf(context).width;
-    return w > 900 ? 80 : 40;
   }
 
   Widget _metricTile(AdminMetric metric) {
@@ -302,98 +320,76 @@ class AdminPageIntro extends StatelessWidget {
     return 'Buenas noches';
   }
 
-  String _formattedDate() {
-    const weekdays = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
-    const months = [
-      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
-    ];
-    final now = DateTime.now();
-    return '${weekdays[now.weekday - 1]} ${now.day} de ${months[now.month - 1]}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final firstName = userName.split(' ').first;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
-      decoration: AdminSoft.introCard,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${_greeting()}, $firstName',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: MaraColors.textPrimary,
-                        letterSpacing: -0.7,
-                        height: 1.15,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      _capitalize(_formattedDate()),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: MaraColors.textSecondary,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+              Text(
+                '${_greeting()}, $firstName',
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: MaraColors.textPrimary,
+                  letterSpacing: -0.8,
+                  height: 1.15,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: (apiOnline ? MaraColors.green : MaraColors.rose).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: (apiOnline ? MaraColors.green : MaraColors.rose).withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: apiOnline ? MaraColors.green : MaraColors.rose,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      apiOnline ? 'En línea' : 'Offline',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: apiOnline ? MaraColors.greenDark : MaraColors.rose,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 6),
+              Text(
+                'Resumen del negocio Farma Express',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: MaraColors.textSecondary.withValues(alpha: 0.95),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: MaraColors.textPrimary.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 7,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: apiOnline ? const Color(0xFF16A34A) : MaraColors.rose,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                apiOnline ? 'API en línea' : 'API offline',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: apiOnline
+                      ? const Color(0xFF15803D)
+                      : MaraColors.rose,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
-  }
-
-  String _capitalize(String s) {
-    if (s.isEmpty) return s;
-    return s[0].toUpperCase() + s.substring(1);
   }
 }
 
@@ -409,32 +405,64 @@ class AdminInlineActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
       children: [
-        FilledButton.icon(
-          onPressed: onAddProduct,
-          icon: const Icon(Icons.add, size: 18),
-          label: const Text('Agregar producto'),
-          style: FilledButton.styleFrom(
-            backgroundColor: MaraColors.green,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Material(
+          color: MaraColors.green,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: onAddProduct,
+            borderRadius: BorderRadius.circular(12),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add_rounded, size: 18, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Agregar producto',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-        const SizedBox(width: 10),
-        OutlinedButton.icon(
-          onPressed: onViewStore,
-          icon: const Icon(Icons.storefront_outlined, size: 17),
-          label: const Text('Ver tienda'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: MaraColors.textSecondary,
-            side: BorderSide(color: MaraColors.textPrimary.withValues(alpha: 0.1)),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: onViewStore,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.storefront_outlined,
+                    size: 17,
+                    color: MaraColors.textPrimary.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Ver tienda',
+                    style: TextStyle(
+                      color: MaraColors.textPrimary.withValues(alpha: 0.8),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -813,7 +841,7 @@ class _ActionButton extends StatelessWidget {
         icon: Icon(icon, size: 18),
         label: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
         style: FilledButton.styleFrom(
-          backgroundColor: MaraColors.navyMid,
+          backgroundColor: MaraColors.green,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -911,6 +939,49 @@ class AdminQuickActionTile extends StatelessWidget {
   }
 }
 
+/// Cabecera simple de listados admin (sin bloque naranja tipo “IA”).
+class AdminListHeader extends StatelessWidget {
+  const AdminListHeader({
+    super.key,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: MaraColors.textPrimary,
+              letterSpacing: -0.4,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 13,
+              color: MaraColors.textSecondary,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+@Deprecated('Usar AdminListHeader')
 class AdminHeroBanner extends StatelessWidget {
   const AdminHeroBanner({
     super.key,
@@ -925,74 +996,7 @@ class AdminHeroBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: MaraColors.gradientNavy,
-        borderRadius: BorderRadius.circular(26),
-        boxShadow: [
-          BoxShadow(
-            color: MaraColors.navy.withValues(alpha: 0.25),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Icon(
-              Icons.auto_awesome_rounded,
-              size: 120,
-              color: Colors.white.withValues(alpha: 0.06),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: const Text(
-                  'Super Admin MaraPlus',
-                  style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w800),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
-                  letterSpacing: -0.5,
-                  height: 1.15,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.82),
-                  fontSize: 13,
-                  height: 1.45,
-                ),
-              ),
-              if (trailing != null) ...[
-                const SizedBox(height: 16),
-                trailing!,
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
+    return AdminListHeader(title: title, subtitle: subtitle);
   }
 }
 
@@ -1102,6 +1106,7 @@ class AdminEntityCard extends StatelessWidget {
                   ],
                 )
               : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     avatar,
                     const SizedBox(width: 14),
@@ -1109,18 +1114,56 @@ class AdminEntityCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                            ),
+                          ),
                           const SizedBox(height: 2),
-                          Text(subtitle, style: const TextStyle(fontSize: 12, color: MaraColors.textSecondary)),
+                          Text(
+                            subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: MaraColors.textSecondary,
+                            ),
+                          ),
                           if (meta != null) ...[
                             const SizedBox(height: 6),
-                            Text(meta!, style: const TextStyle(fontSize: 12, color: MaraColors.navyMid, fontWeight: FontWeight.w700)),
+                            Text(
+                              meta!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: MaraColors.navyMid,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ],
                         ],
                       ),
                     ),
-                    if (badge != null) badge!,
-                    if (trailing != null) trailing!,
+                    if (badge != null) ...[
+                      const SizedBox(width: 8),
+                      badge!,
+                    ],
+                    if (trailing != null) ...[
+                      const SizedBox(width: 8),
+                      // Evita overflow horizontal al navegar con DevTools abierto
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: trailing!,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
         ),
@@ -1216,12 +1259,23 @@ class AdminFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bg = color ?? MaraColors.green;
     return FloatingActionButton.extended(
       onPressed: onPressed,
-      backgroundColor: color ?? MaraColors.navyMid,
-      elevation: 4,
-      icon: Icon(icon),
-      label: Text(label, style: const TextStyle(fontWeight: FontWeight.w800)),
+      backgroundColor: bg,
+      foregroundColor: Colors.white,
+      elevation: 2,
+      highlightElevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      icon: Icon(icon, color: Colors.white),
+      label: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          letterSpacing: -0.1,
+        ),
+      ),
     );
   }
 }

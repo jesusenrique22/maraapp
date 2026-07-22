@@ -85,27 +85,27 @@ class _AdminAddProductScreenState extends ConsumerState<AdminAddProductScreen> {
       return;
     }
 
-    if (_pickedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona una imagen del producto')),
-      );
-      return;
-    }
+    // Imagen opcional: si no hay, usa placeholder Farma Express
+    const placeholderImage =
+        'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop';
 
     setState(() {
       _submitting = true;
-      _uploadStatus = 'Subiendo imagen...';
+      _uploadStatus =
+          _pickedImage != null ? 'Subiendo imagen...' : 'Creando producto...';
     });
 
     try {
-      final imageUrl = await ref.read(adminRepositoryProvider).uploadProductImage(
-            fileName: _pickedImage!.name,
-            bytes: _pickedImage!.bytes,
-            mimeType: _pickedImage!.mimeType,
-          );
-
-      if (!mounted) return;
-      setState(() => _uploadStatus = 'Creando producto...');
+      String imageUrl = placeholderImage;
+      if (_pickedImage != null) {
+        imageUrl = await ref.read(adminRepositoryProvider).uploadProductImage(
+              fileName: _pickedImage!.name,
+              bytes: _pickedImage!.bytes,
+              mimeType: _pickedImage!.mimeType,
+            );
+        if (!mounted) return;
+        setState(() => _uploadStatus = 'Creando producto...');
+      }
 
       final input = CreateProductInput(
         sku: _skuController.text.trim(),

@@ -43,7 +43,7 @@ class _AiChatSheetState extends ConsumerState<AiChatSheet> {
     // Mensaje de bienvenida inicial
     _messages.add(
       ChatMessage(
-        text: '¡Hola! Soy **Maraia**, tu asistente de salud en **MaraPlus**. 🩺\n\nCuéntame qué sientes — fiebre, dolor de cabeza, resfriado — y te oriento con cuidados + productos de nuestra tienda para armar tu carrito.\n\n*Orientación general — no reemplaza consulta médica.*',
+        text: '¡Hola! Soy **Expressia**, tu asistente de salud en **Farma Express**. 🩺\n\nCuéntame qué sientes — fiebre, dolor de cabeza, resfriado — y te oriento con cuidados + productos de nuestra tienda para armar tu carrito.\n\n*Orientación general — no reemplaza consulta médica.*',
         isUser: false,
       ),
     );
@@ -159,7 +159,7 @@ class _AiChatSheetState extends ConsumerState<AiChatSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Maraia',
+                          'Expressia',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -236,7 +236,7 @@ class _AiChatSheetState extends ConsumerState<AiChatSheet> {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      'Maraia está respondiendo...',
+                      'Expressia está respondiendo...',
                       style: TextStyle(
                         fontSize: 12,
                         color: MaraColors.textSecondary,
@@ -453,7 +453,7 @@ class _ChatBubble extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Disponible en MaraPlus',
+                      'Disponible en Farma Express',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,

@@ -10,7 +10,7 @@ export class HealthController {
   check() {
     return {
       status: 'ok',
-      service: 'maraplus-api',
+      service: 'farmaexpress-api',
       timestamp: new Date().toISOString(),
     };
   }
@@ -26,7 +26,7 @@ export class HealthController {
 
     return {
       status: 'ok',
-      service: 'maraplus-api',
+      service: 'farmaexpress-api',
       database: {
         connected: true,
         latencyMs: Date.now() - startedAt,

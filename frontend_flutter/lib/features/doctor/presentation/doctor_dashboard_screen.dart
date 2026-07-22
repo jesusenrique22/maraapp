@@ -189,7 +189,7 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
             Icon(Icons.medical_services_outlined, color: Color(0xFF1E88E5)),
             SizedBox(width: 8),
             Text(
-              'Panel Médico MaraPlus',
+              'Panel Médico Farma Express',
               style: TextStyle(
                 color: MaraColors.textPrimary,
                 fontWeight: FontWeight.w900,
@@ -247,7 +247,7 @@ class _DoctorDashboardScreenState extends ConsumerState<DoctorDashboardScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    user?.name ?? 'Médico MaraPlus',
+                                    user?.name ?? 'Médico Farma Express',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 18,

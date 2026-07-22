@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/config/brand_config.dart';
 import '../../../../core/theme/mara_theme.dart';
 
 /// Detalle del programa de puntos (próximamente).
@@ -47,9 +48,9 @@ class _MaraPuntosSheetBody extends StatelessWidget {
             child: const Icon(Icons.stars_rounded, color: Colors.white, size: 32),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'MaraPuntos',
-            style: TextStyle(
+          Text(
+            BrandConfig.loyaltyName,
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w900,
               color: MaraColors.textPrimary,
@@ -73,10 +74,11 @@ class _MaraPuntosSheetBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            '¡El club de beneficios ya está aquí! Haz tu primera compra y empieza a acumular puntos para canjear por increíbles descuentos.',
+          Text(
+            '¡El club de beneficios de Farma Express ya está aquí! '
+            'Suma puntos en farmacia, panadería, charcutería y más.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: MaraColors.textSecondary,
               fontSize: 14,
               height: 1.45,
@@ -90,8 +92,8 @@ class _MaraPuntosSheetBody extends StatelessWidget {
           ),
           const _BenefitRow(
             icon: Icons.stars_rounded,
-            title: 'Suma MaraPuntos',
-            subtitle: 'Obtén 1 MaraPunto por cada \$1 de compra',
+            title: 'Suma puntos',
+            subtitle: 'Obtén 1 punto por cada \$1 de compra',
           ),
           const _BenefitRow(
             icon: Icons.redeem_outlined,
@@ -104,7 +106,7 @@ class _MaraPuntosSheetBody extends StatelessWidget {
             child: FilledButton(
               onPressed: () => Navigator.pop(context),
               style: FilledButton.styleFrom(
-                backgroundColor: MaraColors.violet,
+                backgroundColor: MaraColors.green,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(

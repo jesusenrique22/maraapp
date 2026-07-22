@@ -35,19 +35,30 @@ class AdminDashboardScreen extends ConsumerWidget {
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(horizontalPadding, 32, horizontalPadding, 80),
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            28,
+            horizontalPadding,
+            80,
+          ),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 720),
               child: statsAsync.when(
                 loading: () => const Padding(
                   padding: EdgeInsets.all(80),
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
-                error: (e, _) => Text('Error: $e'),
+                error: (e, _) => Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text('Error: $e'),
+                ),
                 data: (stats) {
                   final branchCount = branchesAsync.maybeWhen(
-                    data: (branches) => branches.length,
+                    data: (branches) =>
+                        branches.where((b) => b.isActive).length,
                     orElse: () => null,
                   );
 
@@ -58,46 +69,46 @@ class AdminDashboardScreen extends ConsumerWidget {
                         userName: user?.name ?? 'Administrador',
                         apiOnline: stats.apiOnline,
                       ),
-                      const SizedBox(height: 32),
-                      AdminMetricBand(
-                        metrics: [
-                          AdminMetric(label: 'Productos', value: stats.products),
-                          AdminMetric(label: 'Banners', value: stats.banners),
-                          AdminMetric(label: 'Médicos', value: stats.doctors),
-                          AdminMetric(label: 'Pacientes', value: stats.patients),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        children: [
-                          Container(
-                            width: 3,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: MaraColors.green.withValues(alpha: 0.7),
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Secciones',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: MaraColors.textPrimary,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      AdminDirectoryPanel(
-                        items: _directoryItems(context, stats, branchCount),
+                      const SizedBox(height: 20),
+                      AdminInlineActions(
+                        onAddProduct: () =>
+                            context.go('/admin/products/new'),
+                        onViewStore: () => context.go('/home'),
                       ),
                       const SizedBox(height: 28),
-                      AdminInlineActions(
-                        onAddProduct: () => context.go('/admin/products/new'),
-                        onViewStore: () => context.go('/home'),
+                      AdminMetricBand(
+                        metrics: [
+                          AdminMetric(
+                            label: 'Productos',
+                            value: stats.products,
+                          ),
+                          AdminMetric(
+                            label: 'Banners',
+                            value: stats.banners,
+                          ),
+                          AdminMetric(
+                            label: 'Médicos',
+                            value: stats.doctors,
+                          ),
+                          AdminMetric(
+                            label: 'Pacientes',
+                            value: stats.patients,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      const Text(
+                        'Secciones',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: MaraColors.textPrimary,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      AdminDirectoryPanel(
+                        items: _directoryItems(context, stats, branchCount),
                       ),
                     ],
                   );
@@ -147,7 +158,7 @@ List<AdminDirectoryItem> _directoryItems(
     ),
     AdminDirectoryItem(
       title: 'Pacientes',
-      subtitle: 'Usuarios de Medic Plus',
+      subtitle: 'Clientes y usuarios de Medic Plus',
       count: _formatCount(stats.patients),
       icon: Icons.people_outline,
       onTap: () => context.go('/admin/patients'),

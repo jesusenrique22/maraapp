@@ -647,7 +647,7 @@ class _SpecsPage extends ConsumerWidget {
       'mascotas' =>
         'Formulado especialmente para mantener a su mascota saludable, activa y con un pelaje brillante, con ingredientes de la más alta calidad nutricional.',
       _ =>
-        'Producto de alta calidad seleccionado para el catálogo MaraPlus. Garantía de frescura y satisfacción en cada pedido.',
+        'Producto de alta calidad seleccionado para el catálogo Farma Express. Garantía de frescura y satisfacción en cada pedido.',
     };
   }
 }
@@ -1232,7 +1232,7 @@ class _PurchaseBar extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: inStock ? MaraColors.navyAccent : Colors.grey.shade300,
+                  backgroundColor: inStock ? MaraColors.green : Colors.grey.shade300,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

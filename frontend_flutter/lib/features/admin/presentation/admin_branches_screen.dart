@@ -22,16 +22,17 @@ class AdminBranchesScreen extends ConsumerWidget {
         ),
         error: (error, _) => Center(child: Text('Error: $error')),
         data: (branches) {
-          if (branches.isEmpty) {
-            return const Center(child: Text('No hay sucursales registradas'));
+          final active = branches.where((b) => b.isActive).toList();
+          if (active.isEmpty) {
+            return const Center(child: Text('No hay sucursales activas'));
           }
 
           return ListView.separated(
             padding: const EdgeInsets.all(20),
-            itemCount: branches.length,
+            itemCount: active.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final branch = branches[index];
+              final branch = active[index];
               return _BranchAdminCard(branch: branch);
             },
           );

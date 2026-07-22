@@ -13,15 +13,37 @@ import { VENEZUELAN_PHARMACY_PRODUCTS } from '../src/catalog/venezuela-pharmacy.
 
 const prisma = new PrismaClient();
 
+/** Renombra email legacy si el destino aún no existe. */
+async function migrateLegacyEmail(from: string, to: string) {
+  if (!from || !to || from === to) return;
+  const legacy = await prisma.user.findUnique({ where: { email: from } });
+  if (!legacy) return;
+  const target = await prisma.user.findUnique({ where: { email: to } });
+  if (target) {
+    await prisma.user.update({
+      where: { id: legacy.id },
+      data: { isActive: false },
+    });
+    return;
+  }
+  await prisma.user.update({
+    where: { id: legacy.id },
+    data: { email: to },
+  });
+}
+
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@maraplus.com';
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@farmaexpress.com';
   const adminPassword = process.env.ADMIN_PASSWORD ?? 'Admin123!';
   const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+  // Migrar email legacy @maraplus.com → @farmaexpress.com si aplica
+  await migrateLegacyEmail('admin@maraplus.com', adminEmail);
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {
-      name: 'Administrador MaraPlus',
+      name: 'Administrador Farma Express',
       password: hashedPassword,
       role: UserRole.ADMIN,
       isActive: true,
@@ -29,13 +51,35 @@ async function main() {
     create: {
       email: adminEmail,
       password: hashedPassword,
-      name: 'Administrador MaraPlus',
+      name: 'Administrador Farma Express',
       role: UserRole.ADMIN,
     },
   });
 
+  // Limpiar nombres viejos de marca en cualquier usuario
+  const brandedUsers = await prisma.user.findMany({
+    where: {
+      OR: [
+        { name: { contains: 'MaraPlus', mode: 'insensitive' } },
+        { name: { contains: 'Maraplus', mode: 'insensitive' } },
+      ],
+    },
+    select: { id: true, name: true },
+  });
+  for (const u of brandedUsers) {
+    await prisma.user.update({
+      where: { id: u.id },
+      data: {
+        name: u.name
+          .replace(/MaraPlus/gi, 'Farma Express')
+          .replace(/Maraplus/gi, 'Farma Express'),
+      },
+    });
+  }
+
   // Seed Doctor
-  const doctorEmail = 'doctor@maraplus.com';
+  const doctorEmail = 'doctor@farmaexpress.com';
+  await migrateLegacyEmail('doctor@maraplus.com', doctorEmail);
   const doctorPassword = 'Doctor123!';
   const hashedDoctorPassword = await bcrypt.hash(doctorPassword, 10);
 
@@ -59,38 +103,41 @@ async function main() {
     where: { userId: doctorUser.id },
     update: {
       specialty: 'Cardiología y Medicina General',
-      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia.',
+      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Medic Plus en Farma Express.',
       consultationFee: 25.0,
       isActive: true,
     },
     create: {
       userId: doctorUser.id,
       specialty: 'Cardiología y Medicina General',
-      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia.',
+      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Medic Plus en Farma Express.',
       consultationFee: 25.0,
     },
   });
 
   const extraDoctors = [
     {
-      email: 'doctor2@maraplus.com',
+      email: 'doctor2@farmaexpress.com',
+      legacyEmail: 'doctor2@maraplus.com',
       password: 'Doctor123!',
       name: 'Dra. María González',
       specialty: 'Pediatría',
-      bio: 'Pediatra con enfoque en control de niños sanos, vacunas y seguimiento del desarrollo.',
+      bio: 'Pediatra con enfoque en control de niños sanos, vacunas y seguimiento del desarrollo. Medic Plus · Farma Express.',
       fee: 22.0,
     },
     {
-      email: 'doctor3@maraplus.com',
+      email: 'doctor3@farmaexpress.com',
+      legacyEmail: 'doctor3@maraplus.com',
       password: 'Doctor123!',
       name: 'Dr. Roberto Silva',
       specialty: 'Dermatología',
-      bio: 'Especialista en dermatología clínica, acné, alergias cutáneas y cuidado de la piel.',
+      bio: 'Especialista en dermatología clínica, acné, alergias cutáneas y cuidado de la piel. Medic Plus · Farma Express.',
       fee: 28.0,
     },
   ];
 
   for (const doctor of extraDoctors) {
+    await migrateLegacyEmail(doctor.legacyEmail, doctor.email);
     const hashed = await bcrypt.hash(doctor.password, 10);
     const user = await prisma.user.upsert({
       where: { email: doctor.email },
@@ -126,7 +173,8 @@ async function main() {
   }
 
   // Seed Patient
-  const patientEmail = 'patient@maraplus.com';
+  const patientEmail = 'patient@farmaexpress.com';
+  await migrateLegacyEmail('patient@maraplus.com', patientEmail);
   const patientPassword = 'Patient123!';
   const hashedPatientPassword = await bcrypt.hash(patientPassword, 10);
 
@@ -150,26 +198,44 @@ async function main() {
     {
       name: 'Farmacia',
       slug: 'farmacia',
-      description: 'Medicamentos y productos de salud',
+      description: 'Medicamentos, cuidado personal y salud',
       sortOrder: 1,
+      isActive: true,
     },
     {
       name: 'Panadería',
       slug: 'panaderia',
-      description: 'Pan, pasteles y repostería',
+      description: 'Pan fresco, pasteles y repostería',
       sortOrder: 2,
+      isActive: true,
     },
     {
-      name: 'Mascotas',
-      slug: 'mascotas',
-      description: 'Alimentos y accesorios para mascotas',
+      name: 'Charcutería',
+      slug: 'charcuteria',
+      description: 'Embutidos, quesos y fiambres',
       sortOrder: 3,
+      isActive: true,
+    },
+    {
+      name: 'Bodegón',
+      slug: 'bodegon',
+      description: 'Abarrotes, bebidas y consumo diario',
+      sortOrder: 4,
+      isActive: true,
     },
     {
       name: 'Alimentos y bebidas',
       slug: 'alimentos-bebidas',
       description: 'Productos de consumo diario',
-      sortOrder: 4,
+      sortOrder: 5,
+      isActive: true,
+    },
+    {
+      name: 'Mascotas',
+      slug: 'mascotas',
+      description: 'Categoría desactivada — no forma parte de Farma Express',
+      sortOrder: 99,
+      isActive: false,
     },
   ];
 
@@ -186,74 +252,39 @@ async function main() {
 
   const branches = [
     {
-      name: 'MaraPlus Las Mercedes',
-      slug: 'las-mercedes',
-      address: 'Av. Principal de Las Mercedes, Centro Comercial Paseo',
-      city: 'Caracas',
-      state: 'Miranda',
-      phone: '+58 212-555-0101',
+      name: 'Farma Express Indio Mara',
+      slug: 'indio-mara',
+      address: 'Indio Mara, Maracaibo',
+      city: 'Maracaibo',
+      state: 'Zulia',
+      phone: '+58 261-555-0101',
       whatsapp: '+58 414-555-0101',
-      openingHours: 'Lun–Sáb 8:00–21:00 · Dom 9:00–18:00',
+      openingHours: 'Abierto 24 horas',
       isMain: true,
+      isActive: true,
       sortOrder: 1,
-      latitude: 10.4806,
-      longitude: -66.8534,
+      latitude: 10.6666,
+      longitude: -71.6125,
     },
     {
-      name: 'MaraPlus Fuerzas Armadas',
-      slug: 'fuerzas-armadas',
-      address: 'Av. Fuerzas Armadas, CC Plaza MaraPlus Local 4',
-      city: 'Caracas',
-      state: 'Distrito Capital',
-      phone: '+58 212-555-0102',
+      name: 'Farma Express Bella Vista',
+      slug: 'bella-vista',
+      address: 'Bella Vista, Maracaibo',
+      city: 'Maracaibo',
+      state: 'Zulia',
+      phone: '+58 261-555-0102',
       whatsapp: '+58 414-555-0102',
-      openingHours: 'Lun–Sáb 8:00–20:00',
+      openingHours: 'Abierto 24 horas',
+      isMain: false,
+      isActive: true,
       sortOrder: 2,
-      latitude: 10.4969,
-      longitude: -66.8981,
-    },
-    {
-      name: 'MaraPlus Delicias',
-      slug: 'delicias',
-      address: 'Av. Principal de Delicias Norte, Local 12',
-      city: 'Maracay',
-      state: 'Aragua',
-      phone: '+58 243-555-0103',
-      whatsapp: '+58 414-555-0103',
-      openingHours: 'Lun–Sáb 7:30–20:30',
-      sortOrder: 3,
-      latitude: 10.2469,
-      longitude: -67.5958,
-    },
-    {
-      name: 'MaraPlus Catia',
-      slug: 'catia',
-      address: 'Av. Sucre, Centro Comercial Plaza Catia',
-      city: 'Caracas',
-      state: 'Distrito Capital',
-      phone: '+58 212-555-0104',
-      whatsapp: '+58 414-555-0104',
-      openingHours: 'Lun–Sáb 8:00–19:00',
-      sortOrder: 4,
-      latitude: 10.5134,
-      longitude: -66.9467,
-    },
-    {
-      name: 'MaraPlus Valencia Norte',
-      slug: 'valencia-norte',
-      address: 'Av. Bolívar Norte, CC MaraPlus Valencia',
-      city: 'Valencia',
-      state: 'Carabobo',
-      phone: '+58 241-555-0105',
-      whatsapp: '+58 414-555-0105',
-      openingHours: 'Lun–Sáb 8:00–21:00 · Dom 9:00–17:00',
-      sortOrder: 5,
-      latitude: 10.1621,
-      longitude: -68.0077,
+      latitude: 10.6689,
+      longitude: -71.6081,
     },
   ];
 
   const branchMap = new Map<string, string>();
+  const activeBranchSlugs = branches.map((b) => b.slug);
   for (const branch of branches) {
     const saved = await prisma.branch.upsert({
       where: { slug: branch.slug },
@@ -262,6 +293,18 @@ async function main() {
     });
     branchMap.set(branch.slug, saved.id);
   }
+
+  // Desactivar sucursales que no son Farma Express
+  await prisma.branch.updateMany({
+    where: { slug: { notIn: activeBranchSlugs } },
+    data: { isActive: false },
+  });
+
+  // Rename leftover MaraPlus branch names if somehow still active
+  await prisma.branch.updateMany({
+    where: { name: { contains: 'MaraPlus', mode: 'insensitive' } },
+    data: { isActive: false },
+  });
 
   const products = [
     {
@@ -634,60 +677,36 @@ async function main() {
 
   const branchStockMatrix: Record<string, Record<string, number>> = {
     'FAR-001': {
-      'las-mercedes': 40,
-      'fuerzas-armadas': 35,
-      'delicias': 18,
-      'catia': 15,
-      'valencia-norte': 12,
+      'indio-mara': 45,
+      'bella-vista': 38,
     },
     'FAR-002': {
-      'las-mercedes': 30,
-      'fuerzas-armadas': 25,
-      'delicias': 12,
-      'catia': 10,
-      'valencia-norte': 8,
+      'indio-mara': 32,
+      'bella-vista': 28,
     },
     'FAR-003': {
-      'las-mercedes': 20,
-      'fuerzas-armadas': 20,
-      'delicias': 15,
-      'catia': 12,
-      'valencia-norte': 10,
+      'indio-mara': 24,
+      'bella-vista': 20,
     },
     'PAN-001': {
-      'las-mercedes': 25,
-      'fuerzas-armadas': 18,
-      'delicias': 8,
-      'catia': 12,
-      'valencia-norte': 15,
+      'indio-mara': 30,
+      'bella-vista': 22,
     },
     'PAN-002': {
-      'las-mercedes': 35,
-      'fuerzas-armadas': 28,
-      'delicias': 0,
-      'catia': 20,
-      'valencia-norte': 14,
+      'indio-mara': 40,
+      'bella-vista': 26,
     },
     'PET-001': {
-      'las-mercedes': 12,
-      'fuerzas-armadas': 8,
-      'delicias': 5,
-      'catia': 3,
-      'valencia-norte': 6,
+      'indio-mara': 10,
+      'bella-vista': 8,
     },
     'ALI-001': {
-      'las-mercedes': 80,
-      'fuerzas-armadas': 60,
-      'delicias': 45,
-      'catia': 50,
-      'valencia-norte': 55,
+      'indio-mara': 90,
+      'bella-vista': 70,
     },
     'ALI-002': {
-      'fuerzas-armadas': 10,
-      'delicias': 0,
-      'las-mercedes': 25,
-      'catia': 6,
-      'valencia-norte': 14,
+      'indio-mara': 28,
+      'bella-vista': 18,
     },
   };
 
@@ -695,11 +714,8 @@ async function main() {
   for (const item of allProducts) {
     if (!branchStockMatrix[item.sku]) {
       branchStockMatrix[item.sku] = {
-        'las-mercedes': Math.floor(Math.random() * 40) + 15,
-        'fuerzas-armadas': Math.floor(Math.random() * 35) + 15,
-        'delicias': Math.floor(Math.random() * 30) + 10,
-        'catia': Math.floor(Math.random() * 25) + 10,
-        'valencia-norte': Math.floor(Math.random() * 20) + 5,
+        'indio-mara': Math.floor(Math.random() * 40) + 20,
+        'bella-vista': Math.floor(Math.random() * 35) + 15,
       };
     }
   }
@@ -757,66 +773,96 @@ async function main() {
 
   const banners = [
     {
-      title: 'MaraPuntos: gana con cada compra',
-      subtitle: 'Próximamente · Suma puntos y canjéalos',
+      title: 'Paga con Cashea en Farma Express',
+      subtitle: 'Llévalo hoy · Inicial + cuotas sin interés',
+      imageUrl:
+        'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&auto=format&fit=crop',
+      backgroundColor: '#FAFF00',
+      textColor: '#000000',
+      badgeText: 'CASHEA',
+      buttonText: 'Ver cómo funciona',
+      placement: BannerPlacement.HOME_HERO,
+      sortOrder: 0,
+      isActive: true,
+    },
+    {
+      title: 'Medic Plus: consulta online',
+      subtitle: 'Videollamada y receta digital · 24 horas',
+      imageUrl:
+        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
+      backgroundColor: '#0A1628',
+      textColor: '#FFFFFF',
+      badgeText: 'MEDIC PLUS',
+      buttonText: 'Consultar ahora',
+      placement: BannerPlacement.HOME_HERO,
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      title: 'Club FarmaExpress',
+      subtitle: 'Gana puntos en cada compra',
       imageUrl:
         'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=900&auto=format&fit=crop',
       backgroundColor: '#7C3AED',
       textColor: '#FFFFFF',
-      badgeText: 'PRÓXIMAMENTE',
-      buttonText: 'Conocer más',
+      badgeText: 'CLUB',
+      buttonText: 'Ver programa',
       placement: BannerPlacement.HOME_HERO,
-      sortOrder: 0,
-    },
-    {
-      title: '15% en tu primera compra',
-      subtitle: 'Solo delivery · Válido hoy',
-      imageUrl:
-        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
-      backgroundColor: '#1B3A8A',
-      textColor: '#FFFFFF',
-      badgeText: 'NUEVO',
-      buttonText: 'Ordenar ahora',
-      placement: BannerPlacement.HOME_HERO,
-      sortOrder: 1,
+      sortOrder: 2,
+      isActive: true,
     },
     {
       title: 'Panadería fresca cada mañana',
-      subtitle: 'Horneado artesanal · Stock en vivo',
+      subtitle: 'Horneado diario · Stock en vivo',
       imageUrl:
         'https://images.unsplash.com/photo-1486427944299-195ffd3e8b07?w=900&auto=format&fit=crop',
-      backgroundColor: '#009640',
+      backgroundColor: '#C2410C',
       textColor: '#FFFFFF',
       badgeText: 'FRESCO',
       buttonText: 'Ver panadería',
       placement: BannerPlacement.HOME_HERO,
-      sortOrder: 2,
+      sortOrder: 3,
+      isActive: true,
     },
     {
-      title: 'MaraPadel · Reserva tu cancha',
-      subtitle: 'Agenda tu partido · Próximamente en la app',
+      title: 'Todo en un solo lugar',
+      subtitle: 'Farmacia, panadería, charcutería y bodegón · 24h',
       imageUrl:
-        'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&auto=format&fit=crop',
-      backgroundColor: '#0284C7',
+        'https://images.unsplash.com/photo-1631549916762-40c9c2789f56?w=600&auto=format&fit=crop',
+      backgroundColor: '#0F766E',
       textColor: '#FFFFFF',
-      badgeText: 'PRÓXIMAMENTE',
-      buttonText: 'Agendar',
+      badgeText: '24 HORAS',
+      buttonText: 'Explorar',
       placement: BannerPlacement.HOME_STRIP,
       sortOrder: 1,
+      isActive: true,
     },
     {
       title: 'Elige cuidarte, elige ahorrar',
       subtitle: 'Hasta 20% en farmacia',
       imageUrl:
-        'https://images.unsplash.com/photo-1631549916762-40c9c2789f56?w=600&auto=format&fit=crop',
-      backgroundColor: '#1B3A8A',
+        'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=600&auto=format&fit=crop',
+      backgroundColor: '#1D4ED8',
       textColor: '#FFFFFF',
-      badgeText: 'SALE',
-      buttonText: 'Explorar',
+      badgeText: 'OFERTA',
+      buttonText: 'Ver farmacia',
       placement: BannerPlacement.HOME_STRIP,
       sortOrder: 2,
+      isActive: true,
     },
   ];
+
+  // Desactivar banners huérfanos fuera del set Farma Express actual
+  await prisma.banner.updateMany({
+    where: {
+      OR: [
+        { sortOrder: { gt: 3 }, placement: BannerPlacement.HOME_HERO },
+        { title: { contains: 'prueba', mode: 'insensitive' } },
+        { title: { contains: 'Promo prueba', mode: 'insensitive' } },
+      ],
+    },
+    data: { isActive: false },
+  });
 
   for (const banner of banners) {
     const existing = await prisma.banner.findFirst({
@@ -835,6 +881,21 @@ async function main() {
       await prisma.banner.create({ data: banner });
     }
   }
+
+  // Desactivar banners con marca vieja (MaraPuntos, MaraPadel, Dog Plus, etc.)
+  await prisma.banner.updateMany({
+    where: {
+      OR: [
+        { title: { contains: 'MaraPuntos', mode: 'insensitive' } },
+        { title: { contains: 'MaraPadel', mode: 'insensitive' } },
+        { title: { contains: 'MaraPlus', mode: 'insensitive' } },
+        { title: { contains: 'Dog Plus', mode: 'insensitive' } },
+        { title: { contains: 'pádel', mode: 'insensitive' } },
+        { title: { contains: 'padel', mode: 'insensitive' } },
+      ],
+    },
+    data: { isActive: false },
+  });
 
   // Seed an active/completed appointment
   const acetaminofen = await prisma.product.findUnique({
@@ -918,11 +979,11 @@ async function main() {
     console.error('Error al ejecutar migración SQL de imágenes:', sqlErr);
   }
 
-  console.log('Seed completado.');
+  console.log('Seed Farma Express completado.');
   console.log(`Admin: ${adminEmail} / ${adminPassword}`);
   console.log(`Doctor: ${doctorEmail} / ${doctorPassword}`);
-  console.log(`Doctor 2: doctor2@maraplus.com / Doctor123!`);
-  console.log(`Doctor 3: doctor3@maraplus.com / Doctor123!`);
+  console.log(`Doctor 2: doctor2@farmaexpress.com / Doctor123!`);
+  console.log(`Doctor 3: doctor3@farmaexpress.com / Doctor123!`);
   console.log(`Paciente: ${patientEmail} / ${patientPassword}`);
 }
 

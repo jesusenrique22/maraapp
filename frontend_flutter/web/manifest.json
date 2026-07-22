@@ -1,11 +1,11 @@
 {
-    "name": "frontend_flutter",
-    "short_name": "frontend_flutter",
+    "name": "Farma Express",
+    "short_name": "FarmaExpress",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FF6A00",
+    "theme_color": "#FF6A00",
+    "description": "Farma Express — Todo lo que buscas en un solo lugar",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

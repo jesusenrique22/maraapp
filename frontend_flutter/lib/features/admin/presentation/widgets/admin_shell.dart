@@ -378,25 +378,42 @@ class _AdminSidebar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const MaraLogo(height: 34, dark: false),
-              const SizedBox(height: 32),
-              _NavItem(icon: Icons.home_outlined, label: 'Inicio', selected: currentIndex == 0, onTap: () => context.go('/admin')),
-              _NavItem(icon: Icons.insights_outlined, label: 'Estadísticas', selected: currentIndex == 6, onTap: () => context.go('/admin/stats')),
-              _NavItem(icon: Icons.inventory_2_outlined, label: 'Productos', selected: currentIndex == 1, onTap: () => context.go('/admin/products')),
-              _NavItem(icon: Icons.campaign_outlined, label: 'Publicidad', selected: currentIndex == 2, onTap: () => context.go('/admin/banners')),
-              _NavItem(icon: Icons.medical_services_outlined, label: 'Médicos', selected: currentIndex == 3, onTap: () => context.go('/admin/doctors')),
-              _NavItem(icon: Icons.people_outline, label: 'Pacientes', selected: currentIndex == 4, onTap: () => context.go('/admin/patients')),
-              _NavItem(icon: Icons.storefront_outlined, label: 'Sucursales', selected: currentIndex == 5, onTap: () => context.go('/admin/branches')),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Divider(height: 1, color: MaraColors.textPrimary.withValues(alpha: 0.06)),
+              const SizedBox(height: 6),
+              Text(
+                'Administración',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: MaraColors.textSecondary.withValues(alpha: 0.9),
+                  letterSpacing: 0.1,
+                ),
               ),
-              _NavItem(icon: Icons.add_box_outlined, label: 'Nuevo producto', selected: false, onTap: () => context.go('/admin/products/new')),
-              _NavItem(icon: Icons.open_in_new, label: 'Ver tienda', selected: false, onTap: () => context.go('/home'), muted: true),
-              const Spacer(),
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _NavItem(icon: Icons.home_outlined, label: 'Inicio', selected: currentIndex == 0, onTap: () => context.go('/admin')),
+                    _NavItem(icon: Icons.insights_outlined, label: 'Estadísticas', selected: currentIndex == 6, onTap: () => context.go('/admin/stats')),
+                    _NavItem(icon: Icons.inventory_2_outlined, label: 'Productos', selected: currentIndex == 1, onTap: () => context.go('/admin/products')),
+                    _NavItem(icon: Icons.campaign_outlined, label: 'Publicidad', selected: currentIndex == 2, onTap: () => context.go('/admin/banners')),
+                    _NavItem(icon: Icons.medical_services_outlined, label: 'Médicos', selected: currentIndex == 3, onTap: () => context.go('/admin/doctors')),
+                    _NavItem(icon: Icons.people_outline, label: 'Pacientes', selected: currentIndex == 4, onTap: () => context.go('/admin/patients')),
+                    _NavItem(icon: Icons.storefront_outlined, label: 'Sucursales', selected: currentIndex == 5, onTap: () => context.go('/admin/branches')),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Divider(height: 1, color: MaraColors.textPrimary.withValues(alpha: 0.06)),
+                    ),
+                    _NavItem(icon: Icons.add_box_outlined, label: 'Nuevo producto', selected: false, onTap: () => context.go('/admin/products/new')),
+                    _NavItem(icon: Icons.open_in_new, label: 'Ver tienda', selected: false, onTap: () => context.go('/home'), muted: true),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AdminSoft.tintGreen.withValues(alpha: 0.6),
+                  color: AdminSoft.tintGreen.withValues(alpha: 0.55),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: MaraColors.green.withValues(alpha: 0.1)),
                 ),

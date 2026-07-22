@@ -69,42 +69,57 @@ class AdminPatientsScreen extends ConsumerWidget {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(adminPatientsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
-              itemCount: patients.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return AdminHeroBanner(
-                    title: '${patients.length} pacientes registrados',
-                    subtitle: 'Administra cuentas de clientes y usuarios de Medic Plus.',
-                  );
-                }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: AdminListHeader(
+                  title: '${patients.length} pacientes',
+                  subtitle: 'Cuentas de clientes y usuarios de Medic Plus.',
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: MaraColors.green,
+                  onRefresh: () async => ref.invalidate(adminPatientsProvider),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+                    itemCount: patients.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final pat = patients[index];
+                      final isActive = pat['isActive'] as bool? ?? true;
+                      final name = pat['name'] as String? ?? 'Paciente';
 
-                final pat = patients[index - 1];
-                final isActive = pat['isActive'] as bool? ?? true;
-                final name = pat['name'] as String? ?? 'Paciente';
-
-                return AdminEntityCard(
-                  avatar: CircleAvatar(
-                    backgroundColor: MaraColors.green.withValues(alpha: 0.12),
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'P',
-                      style: const TextStyle(color: MaraColors.green, fontWeight: FontWeight.w900),
-                    ),
+                      return AdminEntityCard(
+                        avatar: CircleAvatar(
+                          backgroundColor: MaraColors.green.withValues(alpha: 0.12),
+                          child: Text(
+                            name.isNotEmpty ? name[0].toUpperCase() : 'P',
+                            style: const TextStyle(
+                              color: MaraColors.green,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        title: name,
+                        subtitle: pat['email'] as String? ?? '',
+                        badge: AdminStatusBadge(active: isActive),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              _deletePatient(context, ref, pat['id'] as String, name),
+                          icon: const Icon(
+                            Icons.delete_outline_rounded,
+                            color: MaraColors.rose,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  title: name,
-                  subtitle: pat['email'] as String? ?? '',
-                  badge: AdminStatusBadge(active: isActive),
-                  trailing: IconButton(
-                    onPressed: () => _deletePatient(context, ref, pat['id'] as String, name),
-                    icon: const Icon(Icons.delete_outline_rounded, color: MaraColors.rose),
-                  ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           );
         },
       ),

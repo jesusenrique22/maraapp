@@ -10,7 +10,7 @@ const DUMMYJSON_BEVERAGE_ES: Record<
   },
   Juice: {
     name: 'Jugo de naranja 1L',
-    brand: 'MaraPlus',
+    brand: 'Farma Express',
     description: 'Jugo natural refrescante, rico en vitamina C.',
   },
   'Soft Drinks': {

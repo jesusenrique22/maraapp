@@ -157,7 +157,7 @@ class AccountContinueSheet extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () => Navigator.pop(context, true),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D47A1),
+                    backgroundColor: MaraColors.green,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),

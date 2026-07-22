@@ -19,12 +19,12 @@ class StoredSession {
 }
 
 class AuthStorageImpl {
-  static const _tokenKey = 'maraplus_admin_token';
-  static const _emailKey = 'maraplus_admin_email';
-  static const _nameKey = 'maraplus_admin_name';
-  static const _userIdKey = 'maraplus_admin_user_id';
-  static const _roleKey = 'maraplus_admin_role';
-  static const _avatarUrlKey = 'maraplus_admin_avatar_url';
+  static const _tokenKey = 'farmaexpress_admin_token';
+  static const _emailKey = 'farmaexpress_admin_email';
+  static const _nameKey = 'farmaexpress_admin_name';
+  static const _userIdKey = 'farmaexpress_admin_user_id';
+  static const _roleKey = 'farmaexpress_admin_role';
+  static const _avatarUrlKey = 'farmaexpress_admin_avatar_url';
 
   Future<void> saveSession({
     required String token,

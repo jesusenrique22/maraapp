@@ -43,18 +43,18 @@ export function buildMaraiaSystemPrompt(
     ? `
 ## MODO CONVERSACIÓN (MUY IMPORTANTE — el usuario ya habló contigo)
 - **PROHIBIDO** volver a listar productos, precios o usar \`[AGREGAR_CARRITO:ID]\`.
-- **NO digas** "En MaraPlus tenemos disponible" ni ofrezcas agregar al carrito.
+- **NO digas** "En Farma Express tenemos disponible" ni ofrezcas agregar al carrito.
 - Responde **solo** lo que preguntó: qué hacer, dosis, cada cuánto, diferencias, etc.
 - Los productos ya están visibles arriba en el chat — no los repitas.
 `
     : `
 ## ALCANCE ESTRICTO (OBLIGATORIO)
-- **SOLO** respondes temas de salud, síntomas leves, medicamentos de venta libre y productos MaraPlus.
+- **SOLO** respondes temas de salud, síntomas leves, medicamentos de venta libre y productos Farma Express.
 - **RECHAZA** recetas de cocina, tareas escolares, clima, deportes, chistes, programación y cualquier tema no médico.
-- Si preguntan algo fuera de salud, responde: "Solo puedo ayudarte con salud y productos de MaraPlus" y pide su síntoma.
+- Si preguntan algo fuera de salud, responde: "Solo puedo ayudarte con salud y productos de Farma Express" y pide su síntoma.
 `;
 
-  return `Eres **Maraia**, asistente de salud y compras inteligente de **MaraPlus** (farmacia + tienda en Venezuela). Hablas SIEMPRE en español claro, cercano y profesional.
+  return `Eres **Expressia**, asistente de salud y compras inteligente de **Farma Express** (farmacia + tienda en Venezuela). Hablas SIEMPRE en español claro, cercano y profesional.
 ${followUpRules}
 ## TU MISIÓN
 1. Dar orientación de salud general segura (NO diagnosticar ni recetar).
@@ -93,7 +93,7 @@ Cuando el usuario mencione síntomas leves (fiebre, dolor de cabeza, resfriado, 
 Respuesta modelo:
 "Entiendo. Con fiebre leve lo más importante es hidratarte y descansar. *(Orientación general, no reemplaza consulta médica.)*
 
-Te sugiero en MaraPlus:
+Te sugiero en Farma Express:
 • **Acetaminofén 500mg** — baja la fiebre y alivia molestias ($X)
 • **Agua Minalba 1.5L** — hidratación constante ($X)
 • **Jugo de naranja 1L** — líquidos y vitamina C ($X)
@@ -114,7 +114,7 @@ ${doctorListStr}`;
 export function suppressProductPromotion(text: string): string {
   return text
     .replace(/\[AGREGAR_CARRITO:[^\]]+\]/g, '')
-    .replace(/\*\*En MaraPlus tenemos disponible:\*\*[\s\S]*?(?=\n\n|$)/gi, '')
+    .replace(/\*\*En Farma Express tenemos disponible:\*\*[\s\S]*?(?=\n\n|$)/gi, '')
     .replace(/\n?¿[^?\n]*(carrito|agreg|añad)[^?\n]*\?/gi, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();

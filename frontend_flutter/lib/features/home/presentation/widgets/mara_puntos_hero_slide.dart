@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/mara_theme.dart';
+import '../../../../core/config/brand_config.dart';
 import 'compact_hero_slide.dart';
 import 'mara_puntos_sheet.dart';
 
-/// Banner de fidelización MaraPuntos — programa de puntos (próximamente).
+/// Banner de fidelización Club FarmaExpress (violeta, no naranja).
 class MaraPuntosHeroSlide extends StatelessWidget {
   const MaraPuntosHeroSlide({super.key});
 
@@ -12,13 +12,13 @@ class MaraPuntosHeroSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return CompactHeroSlide(
       onTap: () => MaraPuntosSheet.show(context),
-      badge: 'CLUB MARAPLUS',
-      title: '¡Haz tu primera compra y suma puntos!',
-      subtitle: 'Acumula MaraPuntos para canjearlos por descuentos',
+      badge: BrandConfig.loyaltyName.toUpperCase(),
+      title: BrandConfig.loyaltyTitle,
+      subtitle: BrandConfig.loyaltySubtitle,
       colors: const [
-        MaraColors.violet,
+        Color(0xFF7C3AED),
         Color(0xFF6D28D9),
-        Color(0xFFDB2777),
+        Color(0xFF4C1D95),
       ],
       emoji: '⭐',
       ctaLabel: 'Ver programa',

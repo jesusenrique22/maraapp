@@ -198,11 +198,10 @@ class _AdminDoctorsScreenState extends ConsumerState<AdminDoctorsScreen> {
       floatingActionButton: AdminFab(
         label: 'Nuevo médico',
         icon: Icons.person_add_alt_1_rounded,
-        color: const Color(0xFF1E88E5),
         onPressed: () => _showDoctorDialog(),
       ),
       child: doctorsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator(color: MaraColors.green)),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (doctors) {
           if (doctors.isEmpty) {
@@ -212,56 +211,80 @@ class _AdminDoctorsScreenState extends ConsumerState<AdminDoctorsScreen> {
               subtitle: 'Agrega doctores para que los pacientes puedan agendar consultas.',
               action: FilledButton.icon(
                 onPressed: () => _showDoctorDialog(),
+                style: FilledButton.styleFrom(backgroundColor: MaraColors.green),
                 icon: const Icon(Icons.add_rounded),
                 label: const Text('Agregar médico'),
               ),
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(adminDoctorsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-              itemCount: doctors.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return AdminHeroBanner(
-                    title: '${doctors.length} médicos en el equipo',
-                    subtitle: 'Gestiona especialidades, tarifas y disponibilidad del staff Medic Plus.',
-                  );
-                }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: AdminListHeader(
+                  title: '${doctors.length} médicos',
+                  subtitle: 'Especialidades, tarifas y disponibilidad Medic Plus.',
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: MaraColors.green,
+                  onRefresh: () async => ref.invalidate(adminDoctorsProvider),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+                    itemCount: doctors.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final doc = doctors[index];
+                      final profile = doc['doctorProfile'] as Map<String, dynamic>?;
+                      final isActive = doc['isActive'] as bool? ?? true;
+                      final name = doc['name'] as String? ?? 'Médico';
+                      final bio = profile?['bio']?.toString() ?? '';
 
-                final doc = doctors[index - 1];
-                final profile = doc['doctorProfile'] as Map<String, dynamic>?;
-                final isActive = doc['isActive'] as bool? ?? true;
-                final name = doc['name'] as String? ?? 'Médico';
-                final bio = profile?['bio']?.toString() ?? '';
-
-                return AdminEntityCard(
-                  avatar: CircleAvatar(
-                    radius: 26,
-                    backgroundColor: const Color(0xFF1E88E5).withValues(alpha: 0.12),
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'D',
-                      style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF1E88E5), fontSize: 18),
-                    ),
+                      return AdminEntityCard(
+                        avatar: CircleAvatar(
+                          radius: 26,
+                          backgroundColor: MaraColors.green.withValues(alpha: 0.12),
+                          child: Text(
+                            name.isNotEmpty ? name[0].toUpperCase() : 'D',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              color: MaraColors.green,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        title: name,
+                        subtitle: doc['email'] as String? ?? '',
+                        meta:
+                            '${profile?['specialty'] ?? 'Sin especialidad'} · \$${profile?['consultationFee'] ?? '0'}${bio.isNotEmpty ? '\n$bio' : ''}',
+                        badge: AdminStatusBadge(active: isActive),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _ActionChip(
+                              icon: Icons.edit_outlined,
+                              label: 'Editar',
+                              color: MaraColors.green,
+                              onTap: () => _showDoctorDialog(existing: doc),
+                            ),
+                            const SizedBox(width: 8),
+                            _ActionChip(
+                              icon: Icons.delete_outline_rounded,
+                              label: 'Borrar',
+                              color: MaraColors.rose,
+                              onTap: () => _deleteDoctor(doc['id'] as String, name),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  title: name,
-                  subtitle: doc['email'] as String? ?? '',
-                  meta: '${profile?['specialty'] ?? 'Sin especialidad'} · \$${profile?['consultationFee'] ?? '0'}${bio.isNotEmpty ? '\n$bio' : ''}',
-                  badge: AdminStatusBadge(active: isActive),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _ActionChip(icon: Icons.edit_outlined, label: 'Editar', color: MaraColors.navyMid, onTap: () => _showDoctorDialog(existing: doc)),
-                      const SizedBox(width: 8),
-                      _ActionChip(icon: Icons.delete_outline_rounded, label: 'Borrar', color: MaraColors.rose, onTap: () => _deleteDoctor(doc['id'] as String, name)),
-                    ],
-                  ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           );
         },
       ),

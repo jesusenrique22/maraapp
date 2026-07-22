@@ -17,7 +17,7 @@ class AdminLoginScreen extends ConsumerStatefulWidget {
 class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'admin@maraplus.com');
+  final _emailController = TextEditingController(text: 'admin@farmaexpress.com');
   final _passwordController = TextEditingController();
   bool _obscure = true;
   bool _submitting = false;
@@ -155,7 +155,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen>
                                   ),
                                   const SizedBox(height: 6),
                                   const Text(
-                                    'Gestiona productos, stock y publicidades de MaraPlus.',
+                                    'Gestiona productos, stock y publicidades de Farma Express.',
                                     style: TextStyle(
                                       color: MaraColors.textSecondary,
                                       height: 1.4,
@@ -439,7 +439,7 @@ class _BrandPanel extends StatelessWidget {
           colors: [
             Color(0xFF0A1628),
             Color(0xFF0F2057),
-            Color(0xFF1B3A8A),
+            MaraColors.greenDark,
           ],
           stops: [0.0, 0.5, 1.0],
         ),
@@ -490,7 +490,7 @@ class _BrandPanel extends StatelessWidget {
                 const MaraLogo(height: 64, dark: true),
                 const Spacer(),
                 const Text(
-                  'Control total\nde MaraPlus',
+                  'Control total\nde Farma Express',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,

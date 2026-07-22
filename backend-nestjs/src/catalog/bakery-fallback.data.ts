@@ -58,7 +58,7 @@ export const BAKERY_FALLBACK_CATALOG: CatalogProduct[] = [
     externalId: 'bak-muffin',
     sku: 'PAN-API-005',
     name: 'Muffins de arándanos x4',
-    brand: 'MaraPlus',
+    brand: 'Farma Express',
     description: 'Muffins esponjosos con arándanos frescos.',
     price: 5.99,
     currency: 'USD',

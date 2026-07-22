@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+import 'brand_config.dart';
+
 class AppConfig {
-  static const String appName = 'MaraPlus';
+  static const String appName = BrandConfig.appName;
 
   /// Override en build: --dart-define=API_BASE_URL=https://tu-dominio.com
   static const String _envApiBaseUrl = String.fromEnvironment('API_BASE_URL');
@@ -12,7 +14,6 @@ class AppConfig {
     }
 
     if (kIsWeb) {
-      // Producción web: misma URL que la página (nginx sirve API + Flutter).
       if (!kDebugMode) {
         return Uri.base.origin;
       }

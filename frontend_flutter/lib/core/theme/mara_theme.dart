@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MaraColors {
-  // Brand primaries
-  static const green = Color(0xFF00B96B);
-  static const greenDark = Color(0xFF007A46);
-  static const greenLight = Color(0xFFCCF5E4);
+  // Brand Farma Express — naranja primario (aliases green* para no romper el código)
+  static const green = Color(0xFFFF6A00);
+  static const greenDark = Color(0xFFE85A00);
+  static const greenLight = Color(0xFFFFE8D6);
   static const navy = Color(0xFF0A1628);
-  static const navyMid = Color(0xFF1B3A8A);
-  static const navyAccent = Color(0xFF2563EB);
+  // Antes azul; ahora acentos naranja Farma Express (paneles / CTAs)
+  static const navyMid = Color(0xFFE85A00);
+  static const navyAccent = Color(0xFFFF6A00);
 
   // Vibrant accents
   static const amber = Color(0xFFF59E0B);
@@ -19,9 +20,9 @@ class MaraColors {
   static const roseLight = Color(0xFFFFE4E6);
 
   // Surfaces
-  static const surface = Color(0xFFF0F4FF);
+  static const surface = Color(0xFFFFF7F2);
   static const surfaceCard = Color(0xFFFFFFFF);
-  static const lightBlue = Color(0xFFE8F0FF);
+  static const lightBlue = Color(0xFFFFF0E6);
 
   // Text
   static const textPrimary = Color(0xFF0A1628);
@@ -32,25 +33,25 @@ class MaraColors {
   static const gradientNavy = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF0A1628), Color(0xFF1B3A8A), Color(0xFF2563EB)],
+    colors: [Color(0xFF0A1628), Color(0xFFE85A00), Color(0xFFFF6A00)],
   );
 
   static const gradientGreen = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF00B96B), Color(0xFF007A46)],
+    colors: [Color(0xFFFF6A00), Color(0xFFE85A00)],
   );
 
   static const gradientAmber = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFFF59E0B), Color(0xFFEA580C)],
+    colors: [Color(0xFFFF8A3D), Color(0xFFFF6A00)],
   );
 
   static const gradientViolet = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+    colors: [Color(0xFF7C3AED), Color(0xFFFF6A00)],
   );
 }
 
@@ -95,9 +96,9 @@ class MaraTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: MaraColors.navyMid,
-        primary: MaraColors.navyMid,
-        secondary: MaraColors.green,
+        seedColor: MaraColors.green,
+        primary: MaraColors.green,
+        secondary: MaraColors.navy,
         surface: MaraColors.surface,
       ),
       scaffoldBackgroundColor: MaraColors.surface,
@@ -113,7 +114,7 @@ class MaraTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: MaraColors.navyMid,
+          backgroundColor: MaraColors.green,
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -125,6 +126,45 @@ class MaraTheme {
           ),
           elevation: 0,
         ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: MaraColors.green,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: MaraColors.greenLight,
+          disabledForegroundColor: MaraColors.greenDark,
+          minimumSize: const Size(0, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.inter(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: MaraColors.greenDark,
+          side: const BorderSide(color: MaraColors.green, width: 1.6),
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          textStyle: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: MaraColors.greenDark,
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: MaraColors.green,
+        foregroundColor: Colors.white,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -140,7 +180,7 @@ class MaraTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: MaraColors.navyAccent, width: 2),
+          borderSide: const BorderSide(color: MaraColors.green, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,

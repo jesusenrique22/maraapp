@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/mara_theme.dart';
 import 'promo_cta_button.dart';
 
 /// Banner promocional de Medic Plus para la zona de publicidad del home.
@@ -7,9 +8,6 @@ class MedicPlusPromoBanner extends StatelessWidget {
   const MedicPlusPromoBanner({super.key, required this.onTap});
 
   final VoidCallback onTap;
-
-  static const _navy = Color(0xFF0D47A1);
-  static const _blue = Color(0xFF1976D2);
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +17,10 @@ class MedicPlusPromoBanner extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [_navy, _blue],
-          ),
+          gradient: MaraColors.gradientGreen,
           boxShadow: [
             BoxShadow(
-              color: _navy.withValues(alpha: 0.25),
+              color: MaraColors.green.withValues(alpha: 0.28),
               blurRadius: 18,
               offset: const Offset(0, 8),
             ),
@@ -65,7 +59,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
-                            'NUEVO SERVICIO',
+                            'MEDIC PLUS',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 9,
@@ -87,7 +81,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Videollamada con especialistas y receta digital desde tu celular.',
+                          'Videollamada con especialistas y receta digital desde Farma Express.',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -99,7 +93,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                         const SizedBox(height: 14),
                         const PromoCtaButton(
                           label: 'Consultar ahora',
-                          accentColor: _navy,
+                          accentColor: MaraColors.green,
                           leadingIcon: Icons.video_camera_front_outlined,
                         ),
                       ],
@@ -121,7 +115,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Text('👨‍⚕️', style: TextStyle(fontSize: 40)),
+                      child: const Text('👨‍⚕️', style: TextStyle(fontSize: 28)),
                     ),
                   ),
                 ],

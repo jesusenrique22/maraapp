@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/theme/mara_theme.dart';
+import '../../../../shared/widgets/cashea_brand.dart';
 import '../../../branches/domain/branch_models.dart';
 import '../../providers/cart_provider.dart';
 import 'home_header.dart';
@@ -37,6 +38,8 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   bool _isSubmitting = false;
   late FulfillmentType _fulfillmentType;
   Branch? _pickupBranch;
+  /// Cashea es el método preferido de Farma Express (cuotas sin interés).
+  _PaymentMethod _paymentMethod = _PaymentMethod.cashea;
 
   @override
   void initState() {
@@ -54,6 +57,14 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
   }
 
   double get _total => widget.subtotal + _deliveryFee;
+
+  /// Inicial típica Cashea (~30%); el resto en cuotas quincenales.
+  double get _casheaInitial => (_total * 0.3).clamp(1.0, _total);
+
+  double get _casheaInstallment {
+    final financed = (_total - _casheaInitial).clamp(0.0, _total);
+    return financed / 3;
+  }
 
   @override
   void dispose() {
@@ -121,15 +132,20 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
     setState(() => _isSubmitting = true);
     try {
+      final casheaNote = _paymentMethod == _PaymentMethod.cashea
+          ? 'Pago con Cashea · Inicial \$${_casheaInitial.toStringAsFixed(2)} · '
+              '3 cuotas de \$${_casheaInstallment.toStringAsFixed(2)}'
+          : 'Pago completo al confirmar';
+      final userNotes = _notesController.text.trim();
+      final notes = userNotes.isEmpty ? casheaNote : '$casheaNote · $userNotes';
+
       await widget.onConfirm(
         fulfillmentType: _fulfillmentType,
         branchId: branchId,
         deliveryAddress: _fulfillmentType == FulfillmentType.delivery
             ? _addressController.text.trim()
             : null,
-        notes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
+        notes: notes,
       );
       if (mounted) Navigator.pop(context, true);
     } catch (_) {
@@ -207,7 +223,19 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
 
                     const SizedBox(height: 20),
 
-                    // 4. Notes
+                    // 4. Pago — Cashea primero (canal principal de Farma Express)
+                    const _SectionLabel(label: 'Método de pago'),
+                    const SizedBox(height: 10),
+                    _PaymentMethodPicker(
+                      selected: _paymentMethod,
+                      total: _total,
+                      casheaInitial: _casheaInitial,
+                      casheaInstallment: _casheaInstallment,
+                      onChanged: (v) => setState(() => _paymentMethod = v),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 5. Notes
                     const _SectionLabel(label: 'Notas (opcional)'),
                     const SizedBox(height: 10),
                     _StyledField(
@@ -227,6 +255,8 @@ class _CheckoutSheetState extends State<CheckoutSheet> {
               deliveryFee: _deliveryFee,
               total: _total,
               fulfillmentType: _fulfillmentType,
+              paymentMethod: _paymentMethod,
+              casheaInitial: _casheaInitial,
               isSubmitting: _isSubmitting,
               onConfirm: _submit,
             ),
@@ -660,6 +690,174 @@ class _BranchCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Payment method (Cashea first)
+// ─────────────────────────────────────────────────────────────────────────────
+enum _PaymentMethod { cashea, full }
+
+class _PaymentMethodPicker extends StatelessWidget {
+  const _PaymentMethodPicker({
+    required this.selected,
+    required this.total,
+    required this.casheaInitial,
+    required this.casheaInstallment,
+    required this.onChanged,
+  });
+
+  final _PaymentMethod selected;
+  final double total;
+  final double casheaInitial;
+  final double casheaInstallment;
+  final ValueChanged<_PaymentMethod> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _PaymentOptionCard(
+          selected: selected == _PaymentMethod.cashea,
+          onTap: () => onChanged(_PaymentMethod.cashea),
+          accent: MaraColors.green,
+          selectedFill: const Color(0xFFFAFF00),
+          badge: 'RECOMENDADO',
+          title: 'Cashea',
+          subtitle:
+              'Paga \$${casheaInitial.toStringAsFixed(2)} hoy y 3 cuotas de '
+              '\$${casheaInstallment.toStringAsFixed(2)} · Sin interés',
+          leading: const CasheaBadge(height: 28),
+        ),
+        const SizedBox(height: 10),
+        _PaymentOptionCard(
+          selected: selected == _PaymentMethod.full,
+          onTap: () => onChanged(_PaymentMethod.full),
+          accent: MaraColors.green,
+          title: 'Pago completo',
+          subtitle: 'Paga el total de \$${total.toStringAsFixed(2)} al confirmar',
+          leading: Icon(Icons.payments_outlined, color: MaraColors.green, size: 22),
+        ),
+      ],
+    );
+  }
+}
+
+class _PaymentOptionCard extends StatelessWidget {
+  const _PaymentOptionCard({
+    required this.selected,
+    required this.onTap,
+    required this.accent,
+    required this.title,
+    required this.subtitle,
+    required this.leading,
+    this.badge,
+    this.selectedFill,
+  });
+
+  final bool selected;
+  final VoidCallback onTap;
+  final Color accent;
+  final String title;
+  final String subtitle;
+  final Widget leading;
+  final String? badge;
+  final Color? selectedFill;
+
+  @override
+  Widget build(BuildContext context) {
+    final fill = selected
+        ? (selectedFill ?? accent.withValues(alpha: 0.06))
+        : Colors.white;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: selected ? accent : const Color(0xFFE2E8F0),
+              width: selected ? 1.8 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              leading,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15,
+                            color: selected && selectedFill != null
+                                ? Colors.black
+                                : (selected ? accent : MaraColors.textPrimary),
+                          ),
+                        ),
+                        if (badge != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: selected && selectedFill != null
+                                  ? Colors.black
+                                  : accent,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              badge!,
+                              style: TextStyle(
+                                color: selected && selectedFill != null
+                                    ? const Color(0xFFFAFF00)
+                                    : Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: selected && selectedFill != null
+                            ? Colors.black.withValues(alpha: 0.72)
+                            : MaraColors.textSecondary,
+                        height: 1.3,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                color: selected ? accent : MaraColors.textTertiary,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Sticky Bottom Panel
 // ─────────────────────────────────────────────────────────────────────────────
 class _StickyBottomPanel extends StatelessWidget {
@@ -668,6 +866,8 @@ class _StickyBottomPanel extends StatelessWidget {
     required this.deliveryFee,
     required this.total,
     required this.fulfillmentType,
+    required this.paymentMethod,
+    required this.casheaInitial,
     required this.isSubmitting,
     required this.onConfirm,
   });
@@ -676,11 +876,14 @@ class _StickyBottomPanel extends StatelessWidget {
   final double deliveryFee;
   final double total;
   final FulfillmentType fulfillmentType;
+  final _PaymentMethod paymentMethod;
+  final double casheaInitial;
   final bool isSubmitting;
   final VoidCallback onConfirm;
 
   @override
   Widget build(BuildContext context) {
+    final isCashea = paymentMethod == _PaymentMethod.cashea;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
       decoration: const BoxDecoration(
@@ -692,13 +895,12 @@ class _StickyBottomPanel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Totals
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFD),
+              color: MaraColors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              border: Border.all(color: const Color(0xFFFFE0CC)),
             ),
             child: Column(
               children: [
@@ -716,12 +918,20 @@ class _StickyBottomPanel extends StatelessWidget {
                       : '\$${deliveryFee.toStringAsFixed(2)}',
                   valueColor: deliveryFee == 0 ? MaraColors.green : null,
                 ),
+                if (isCashea) ...[
+                  const SizedBox(height: 8),
+                  _TotalRow(
+                    label: 'Inicial Cashea hoy',
+                    value: '\$${casheaInitial.toStringAsFixed(2)}',
+                    valueColor: MaraColors.greenDark,
+                  ),
+                ],
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                 ),
                 _TotalRow(
-                  label: 'Total a pagar',
+                  label: isCashea ? 'Total del pedido' : 'Total a pagar',
                   value: '\$${total.toStringAsFixed(2)}',
                   bold: true,
                 ),
@@ -729,14 +939,14 @@ class _StickyBottomPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          // Confirm Button (clean flat blue)
           SizedBox(
             width: double.infinity,
             height: 52,
             child: FilledButton(
               onPressed: isSubmitting ? null : onConfirm,
               style: FilledButton.styleFrom(
-                backgroundColor: MaraColors.navyAccent,
+                backgroundColor: MaraColors.green,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -750,9 +960,9 @@ class _StickyBottomPanel extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Confirmar pedido',
-                      style: TextStyle(
+                  : Text(
+                      isCashea ? 'Pagar con Cashea' : 'Confirmar pedido',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
                         color: Colors.white,
@@ -798,7 +1008,7 @@ class _TotalRow extends StatelessWidget {
             fontWeight: FontWeight.w900,
             fontSize: bold ? 18 : 14,
             color: valueColor ??
-                (bold ? MaraColors.navyAccent : MaraColors.textPrimary),
+                (bold ? MaraColors.green : MaraColors.textPrimary),
           ),
         ),
       ],

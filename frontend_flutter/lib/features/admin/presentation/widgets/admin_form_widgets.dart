@@ -116,7 +116,7 @@ class AdminProductImagePicker extends StatelessWidget {
               ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.upload_file_rounded),
           label: Text(bytes == null ? 'Seleccionar imagen' : 'Cambiar imagen'),
-          style: FilledButton.styleFrom(backgroundColor: MaraColors.navy),
+          style: FilledButton.styleFrom(backgroundColor: MaraColors.green),
         ),
       ],
     );

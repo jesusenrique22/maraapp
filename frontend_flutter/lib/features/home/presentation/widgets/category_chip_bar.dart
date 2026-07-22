@@ -20,36 +20,44 @@ class CategoryChipBar extends StatelessWidget {
     return switch (slug) {
       'farmacia' => Icons.healing_outlined,
       'panaderia' => Icons.bakery_dining_outlined,
-      'mascotas' => Icons.pets_outlined,
+      'charcuteria' => Icons.kebab_dining_outlined,
+      'bodegon' => Icons.storefront_outlined,
       'alimentos-bebidas' => Icons.shopping_bag_outlined,
+      'mascotas' => Icons.pets_outlined,
       _ => Icons.grid_view_outlined,
     };
   }
 
   static LinearGradient gradientForSlug(String slug) {
     return switch (slug) {
-      'farmacia' => const LinearGradient(
-          colors: [Color(0xFF00A651), Color(0xFF007A46)],
-        ),
+      'farmacia' => MaraColors.gradientGreen,
       'panaderia' => const LinearGradient(
-          colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
+          colors: [Color(0xFFFF8A3D), Color(0xFFE85A00)],
         ),
-      'mascotas' => const LinearGradient(
-          colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+      'charcuteria' => const LinearGradient(
+          colors: [Color(0xFFE85A00), Color(0xFF0A1628)],
+        ),
+      'bodegon' => const LinearGradient(
+          colors: [Color(0xFF0A1628), Color(0xFFFF6A00)],
         ),
       'alimentos-bebidas' => const LinearGradient(
-          colors: [Color(0xFF1B3A8A), Color(0xFF2563EB)],
+          colors: [Color(0xFFFF6A00), Color(0xFF1B2A4A)],
         ),
-      _ => MaraColors.gradientNavy,
+      'mascotas' => const LinearGradient(
+          colors: [Color(0xFF94A3B8), Color(0xFF64748B)],
+        ),
+      _ => MaraColors.gradientGreen,
     };
   }
 
   static String subtitleForSlug(String slug) {
     return switch (slug) {
-      'farmacia' => 'Salud y bienestar',
+      'farmacia' => 'Salud 24 horas',
       'panaderia' => 'Fresco cada día',
-      'mascotas' => 'Para tu mejor amigo',
-      'alimentos-bebidas' => 'Despensa y más',
+      'charcuteria' => 'Embutidos y más',
+      'bodegon' => 'Todo en un lugar',
+      'alimentos-bebidas' => 'Despensa y bebidas',
+      'mascotas' => 'No disponible',
       _ => 'Explorar productos',
     };
   }

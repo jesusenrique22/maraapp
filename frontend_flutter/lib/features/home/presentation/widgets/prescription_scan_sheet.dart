@@ -288,7 +288,7 @@ class _PrescriptionScanSheetState extends ConsumerState<PrescriptionScanSheet> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Lee tu receta y busca en inventario MaraPlus',
+                          'Lee tu receta y busca en inventario Farma Express',
                           style: TextStyle(fontSize: 12, color: MaraColors.textSecondary),
                         ),
                       ],

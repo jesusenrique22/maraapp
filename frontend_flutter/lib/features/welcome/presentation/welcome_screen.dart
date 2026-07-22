@@ -53,7 +53,7 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Bienvenido a MaraPlus',
+                        'Bienvenido a Farma Express',
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme
@@ -65,8 +65,8 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Farmacia, panadería, mascotas y más. '
-                        'Productos con stock en tiempo real y atención de confianza.',
+                        'Farmacia, panadería, charcutería y bodegón · 24 horas. '
+                        'Todo lo que buscas en un solo lugar.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme

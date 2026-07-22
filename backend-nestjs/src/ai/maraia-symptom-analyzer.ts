@@ -34,10 +34,10 @@ function buildAnalyzerPrompt(
 ): string {
   const historyText = history
     .slice(-6)
-    .map((h) => `${h.role === 'user' ? 'Usuario' : 'Maraia'}: ${h.text.slice(0, 400)}`)
+    .map((h) => `${h.role === 'user' ? 'Usuario' : 'Expressia'}: ${h.text.slice(0, 400)}`)
     .join('\n');
 
-  return `Eres el módulo de análisis de Maraia (farmacia MaraPlus, Venezuela).
+  return `Eres el módulo de análisis de Expressia (farmacia Farma Express, Venezuela).
 Analiza el ÚLTIMO mensaje del usuario en contexto del chat.
 
 Historial reciente:

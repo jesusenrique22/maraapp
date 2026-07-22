@@ -42,22 +42,31 @@ class AdminProductsScreen extends ConsumerWidget {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(adminProductsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-              itemCount: products.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return AdminHeroBanner(
-                    title: '${products.length} productos en catálogo',
-                    subtitle: 'Edita precios, stock, imágenes o elimina artículos de la tienda.',
-                  );
-                }
-                return _AdminProductTile(product: products[index - 1]);
-              },
-            ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: AdminListHeader(
+                  title: '${products.length} productos',
+                  subtitle: 'Catálogo, precios, stock e imágenes.',
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: MaraColors.green,
+                  onRefresh: () async => ref.invalidate(adminProductsProvider),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+                    itemCount: products.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      return _AdminProductTile(product: products[index]);
+                    },
+                  ),
+                ),
+              ),
+            ],
           );
         },
       ),

@@ -23,14 +23,20 @@ class MaraNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.trim().isEmpty) {
+      final fallbackWidget = fallback ?? _defaultFallback();
+      if (borderRadius == null) return fallbackWidget;
+      return ClipRRect(borderRadius: borderRadius!, child: fallbackWidget);
+    }
+
     final image = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
       height: height,
       fit: fit,
       httpHeaders: const {'Accept': 'image/*'},
-      placeholder: (_, __) => fallback ?? _defaultFallback(),
-      errorWidget: (_, __, ___) => fallback ?? _defaultFallback(),
+      placeholder: (_, _) => fallback ?? _defaultFallback(),
+      errorWidget: (_, _, _) => fallback ?? _defaultFallback(),
     );
 
     if (borderRadius == null) return image;

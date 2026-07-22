@@ -146,7 +146,7 @@ class _ProductCardState extends State<ProductCard> {
                                 Text(
                                   '\$${widget.product.finalPrice.toStringAsFixed(2)}',
                                   style: const TextStyle(
-                                    color: MaraColors.navyAccent,
+                                    color: MaraColors.green,
                                     fontWeight: FontWeight.w900,
                                     fontSize: 18,
                                     letterSpacing: -0.5,
@@ -174,11 +174,11 @@ class _ProductCardState extends State<ProductCard> {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: MaraColors.navyAccent,
+                                  color: MaraColors.green,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: MaraColors.navyAccent
+                                      color: MaraColors.green
                                           .withValues(alpha: 0.3),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
@@ -216,7 +216,7 @@ class _DiscountBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: MaraColors.navyAccent,
+        color: MaraColors.green,
         borderRadius: BorderRadius.circular(6),
       ),
       alignment: Alignment.center,

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/models/catalog_models.dart';
 
 class CartStorage {
-  static const _cartKey = 'maraplus_cart_v1';
+  static const _cartKey = 'farmaexpress_cart_v1';
 
   Future<void> save(List<CartItemSnapshot> items) async {
     final prefs = await SharedPreferences.getInstance();

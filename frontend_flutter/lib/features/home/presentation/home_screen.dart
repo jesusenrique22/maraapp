@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/router/auth_redirect.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/mara_theme.dart';
+import '../../../shared/widgets/cashea_brand.dart';
 import '../../admin/providers/admin_providers.dart';
 import '../../orders/data/orders_repository.dart';
 import '../../orders/domain/order_models.dart';
@@ -147,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             style: TextStyle(fontWeight: FontWeight.w900),
           ),
           content: const Text(
-            'Para completar tu compra necesitas una cuenta MaraPlus. '
+            'Para completar tu compra necesitas una cuenta Farma Express. '
             'Puedes iniciar sesión o registrarte en segundos.',
           ),
           actions: [
@@ -258,6 +259,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _enterMedicPlus() async {
     final auth = ref.read(adminAuthProvider);
 
+    void goMedicPlus() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.go('/medic-plus');
+      });
+    }
+
+    void goMedicLogin() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.go(AuthRedirect.medicPlusLoginPath(redirect: '/medic-plus'));
+      });
+    }
+
     if (auth.isAuthenticated && auth.session?.user.role == 'CUSTOMER') {
       final useSession = await AccountContinueSheet.show(
         context,
@@ -272,20 +287,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (!mounted) return;
 
       if (useSession == true) {
-        context.go('/medic-plus');
+        goMedicPlus();
         return;
       }
 
       if (useSession == false) {
         await ref.read(adminAuthProvider.notifier).logout();
         if (!mounted) return;
-        context.go(AuthRedirect.medicPlusLoginPath(redirect: '/medic-plus'));
+        goMedicLogin();
       }
       return;
     }
 
     if (!auth.isAuthenticated) {
-      context.go(AuthRedirect.medicPlusLoginPath(redirect: '/medic-plus'));
+      goMedicLogin();
       return;
     }
 
@@ -392,7 +407,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const Divider(height: 24, thickness: 1, color: Color(0xFFF1F5F9)),
               const _NotificationItem(
-                title: 'Bienvenido a MaraPlus 🎉',
+                title: 'Bienvenido a Farma Express 🎉',
                 body: 'Explora nuestra app, agenda consultas médicas virtuales y compra en nuestra tienda.',
                 time: 'Ayer',
                 isNew: false,
@@ -403,7 +418,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: FilledButton(
                   onPressed: () => Navigator.pop(context),
                   style: FilledButton.styleFrom(
-                    backgroundColor: MaraColors.navyMid,
+                    backgroundColor: MaraColors.green,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -473,7 +488,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Container(
                 decoration: const BoxDecoration(
-                  color: MaraColors.navyAccent,
+                  color: MaraColors.green,
                   shape: BoxShape.circle,
                 ),
                 child: FloatingActionButton(
@@ -481,7 +496,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                   highlightElevation: 0,
-                  tooltip: 'Preguntar a Maraia (IA)',
+                  tooltip: 'Preguntar a Expressia (IA)',
                   child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 28),
                 ),
               ),
@@ -489,7 +504,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: RefreshIndicator(
-        color: MaraColors.navyMid,
+        color: MaraColors.green,
         backgroundColor: Colors.white,
         onRefresh: () async {
           ref.invalidate(categoriesProvider);
@@ -577,7 +592,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: const Text(
-                                  'MaraPlus Farmacia',
+                                  'Farma Express',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,
@@ -838,7 +853,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   data: (products) => SliverToBoxAdapter(
                     child: ProductSectionRow(
                       title: 'Nuestros recomendados',
-                      subtitle: 'Selección especial MaraPlus ✦',
+                      subtitle: 'Selección especial Farma Express ✦',
                       products: products,
                       accentColor: MaraColors.green,
                     ),
@@ -1015,7 +1030,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: NavigationBar(
           height: 68,
           backgroundColor: Colors.white,
-          indicatorColor: MaraColors.lightBlue,
+          indicatorColor: MaraColors.greenLight,
+          overlayColor: WidgetStatePropertyAll(
+            MaraColors.green.withValues(alpha: 0.08),
+          ),
           selectedIndex: _currentTab >= 2 ? _currentTab + 1 : _currentTab,
           onDestinationSelected: (index) {
             if (index == 2) {
@@ -1032,22 +1050,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           destinations: [
             const NavigationDestination(
               icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
+              selectedIcon: Icon(Icons.home_rounded, color: MaraColors.green),
               label: 'Inicio',
             ),
             const NavigationDestination(
               icon: Icon(Icons.grid_view_outlined),
-              selectedIcon: Icon(Icons.grid_view_rounded),
+              selectedIcon: Icon(Icons.grid_view_rounded, color: MaraColors.green),
               label: 'Categorías',
             ),
             const NavigationDestination(
               icon: Icon(Icons.local_hospital_outlined),
-              selectedIcon: Icon(Icons.local_hospital_rounded),
+              selectedIcon: Icon(Icons.local_hospital_rounded, color: MaraColors.green),
               label: 'Medic Plus',
             ),
             const NavigationDestination(
-              icon: Icon(Icons.shopping_bag_outlined),
-              selectedIcon: Icon(Icons.shopping_bag_rounded),
+              icon: Icon(Icons.shopping_bag_outlined, color: MaraColors.green),
+              selectedIcon: Icon(Icons.shopping_bag_rounded, color: MaraColors.green),
               label: 'Carrito',
             ),
             NavigationDestination(
@@ -1056,7 +1074,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ? Icons.person_outline_rounded
                     : Icons.person_outline_rounded,
               ),
-              selectedIcon: const Icon(Icons.person_rounded),
+              selectedIcon: const Icon(Icons.person_rounded, color: MaraColors.green),
               label: ref.watch(adminAuthProvider).isAuthenticated
                   ? 'Mi cuenta'
                   : 'Cuenta',
@@ -1099,7 +1117,7 @@ class _CategoryListCardState extends State<_CategoryListCard> {
       'farmacia' => const Color(0xFF00A651),
       'panaderia' => const Color(0xFFF59E0B),
       'mascotas' => const Color(0xFF7C3AED),
-      'alimentos-bebidas' => const Color(0xFF2563EB),
+      'alimentos-bebidas' => MaraColors.green,
       _ => MaraColors.navyMid,
     };
   }
@@ -1282,7 +1300,7 @@ class _ErrorState extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               style: FilledButton.styleFrom(
-                backgroundColor: MaraColors.navyMid,
+                backgroundColor: MaraColors.green,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -1524,20 +1542,21 @@ class _CartListView extends StatelessWidget {
               (context, index) {
                 final item = items[index];
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: MaraShadows.card,
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xFFEEF2F7)),
+                    ),
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         child: SizedBox(
-                          width: 64,
-                          height: 64,
+                          width: 56,
+                          height: 56,
                           child: ProductImage(
                             imageUrl: item.product.imageUrl,
                             categorySlug: item.product.category.slug,
@@ -1545,7 +1564,7 @@ class _CartListView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1555,64 +1574,60 @@ class _CartListView extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
                                 color: MaraColors.textPrimary,
+                                height: 1.25,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 6),
                             Text(
                               '\$${item.product.finalPrice.toStringAsFixed(2)} c/u',
                               style: const TextStyle(
-                                fontSize: 12,
-                                color: MaraColors.textSecondary,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                color: MaraColors.green,
+                                fontWeight: FontWeight.w700,
                               ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                _QtyButton(
+                                  icon: Icons.remove_rounded,
+                                  onTap: () => onDecrease(item.product),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  '${item.quantity}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14,
+                                    color: MaraColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                _QtyButton(
+                                  icon: Icons.add_rounded,
+                                  onTap: item.quantity >= item.product.stock
+                                      ? null
+                                      : () => onIncrease(item.product),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () => onRemove(item.product),
+                                  child: const Text(
+                                    'Eliminar',
+                                    style: TextStyle(
+                                      color: MaraColors.rose,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              _QtyButton(
-                                icon: Icons.remove_rounded,
-                                onTap: () => onDecrease(item.product),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '${item.quantity}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 14,
-                                  color: MaraColors.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              _QtyButton(
-                                icon: Icons.add_rounded,
-                                onTap: item.quantity >= item.product.stock
-                                    ? null
-                                    : () => onIncrease(item.product),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          GestureDetector(
-                            onTap: () => onRemove(item.product),
-                            child: const Text(
-                              'Eliminar',
-                              style: TextStyle(
-                                color: MaraColors.rose,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -1621,14 +1636,43 @@ class _CartListView extends StatelessWidget {
               childCount: items.length,
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          // Cashea — card amarilla suave
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAFF00),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+              ),
+              child: Row(
+                children: [
+                  const CasheaBadge(height: 26),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Paga una inicial y el resto en cuotas sin interés. Disponible al finalizar.',
+                      style: TextStyle(
+                        color: Colors.black.withValues(alpha: 0.82),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: MaraColors.surface,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: MaraShadows.elevated,
+                border: Border.all(color: const Color(0xFFFFE0CC)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1666,25 +1710,34 @@ class _CartListView extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 20,
-                          color: Color(0xFF0D47A1),
+                          color: MaraColors.green,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Con Cashea desde \$${(total * 0.3).clamp(1, total).toStringAsFixed(2)} hoy',
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
                       onPressed: onCheckout,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0D47A1),
+                        backgroundColor: MaraColors.green,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
                       child: const Text(
-                        'Confirmar y Finalizar Compra',
+                        'Continuar al pago',
                         style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,

@@ -233,14 +233,14 @@ class _ConsultationChatTab extends StatelessWidget {
                 ),
                 child: Row(
                   children: const [
-                    Icon(Icons.info_outline_rounded, color: Color(0xFF0D47A1), size: 18),
+                    Icon(Icons.info_outline_rounded, color: MaraColors.green, size: 18),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Chat de consulta (vista previa). Podrás enviar mensajes en una próxima versión.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF0D47A1),
+                          color: MaraColors.green,
                           height: 1.35,
                         ),
                       ),

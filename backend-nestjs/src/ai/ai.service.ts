@@ -131,7 +131,7 @@ export class AiService {
 
     if (analysis.intent === 'off_topic') return buildOffTopicResponse();
     if (analysis.intent === 'greeting') {
-      return '¡Hola! Soy **Maraia**, tu asistente de salud en **MaraPlus**. 🩺\n\nCuéntame qué sientes — cualquier síntoma — y busco en nuestro catálogo qué medicamentos te pueden servir.\n\n*Orientación general — no reemplaza consulta médica.*';
+      return '¡Hola! Soy **Expressia**, tu asistente de salud en **Farma Express**. 🩺\n\nCuéntame qué sientes — cualquier síntoma — y busco en nuestro catálogo qué medicamentos te pueden servir.\n\n*Orientación general — no reemplaza consulta médica.*';
     }
     if (analysis.intent === 'vague_symptom') return buildVagueSymptomsPrompt();
 

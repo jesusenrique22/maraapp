@@ -11,7 +11,7 @@ import type { PrescriptionVisionResult } from './prescription-scan.types';
 
 const logger = new Logger('PrescriptionGeminiParser');
 
-const EXTRACTION_PROMPT = `Eres un extractor de recetas médicas para una farmacia en Venezuela (MaraPlus).
+const EXTRACTION_PROMPT = `Eres un extractor de recetas médicas para una farmacia en Venezuela (Farma Express).
 Analiza la imagen y extrae SOLO medicamentos legibles.
 
 REGLAS:

@@ -44,7 +44,7 @@ class PromoStripRow extends StatelessWidget {
             LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [MaraColors.navyMid, const Color(0xFF1E40AF)],
+              colors: [MaraColors.navyMid, MaraColors.green],
             ),
           ];
 

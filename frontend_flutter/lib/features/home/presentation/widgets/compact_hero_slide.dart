@@ -20,11 +20,14 @@ class CompactHeroSlide extends StatelessWidget {
 
   factory CompactHeroSlide.fromBanner(PromoBanner banner) {
     final bg = _parseColor(banner.backgroundColor, MaraColors.green);
+    final isLight = bg.computeLuminance() > 0.55;
     return CompactHeroSlide(
       badge: banner.badgeText ?? 'PROMO',
       title: banner.title,
       subtitle: banner.subtitle ?? '',
-      colors: [bg, _darken(bg, 0.12), _darken(bg, 0.22)],
+      colors: isLight
+          ? [bg, Color.lerp(bg, Colors.white, 0.08)!, Color.lerp(bg, Colors.black, 0.06)!]
+          : [bg, _darken(bg, 0.12), _darken(bg, 0.22)],
       ctaLabel: banner.buttonText,
     );
   }
@@ -53,6 +56,12 @@ class CompactHeroSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = colors.first;
+    final isLight = accent.computeLuminance() > 0.55;
+    final titleColor = isLight ? Colors.black : Colors.white;
+    final muted = isLight
+        ? Colors.black.withValues(alpha: 0.7)
+        : Colors.white.withValues(alpha: 0.88);
+    final ctaAccent = isLight ? Colors.black : MaraColors.green;
 
     return GestureDetector(
       onTap: onTap,
@@ -61,7 +70,7 @@ class CompactHeroSlide extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: accent.withValues(alpha: 0.28),
+              color: (isLight ? Colors.black : accent).withValues(alpha: 0.18),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -91,7 +100,8 @@ class CompactHeroSlide extends StatelessWidget {
                   height: 140,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.07),
+                    color: (isLight ? Colors.black : Colors.white)
+                        .withValues(alpha: 0.07),
                   ),
                 ),
               ),
@@ -125,14 +135,14 @@ class CompactHeroSlide extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Badge(label: badge),
+                    _Badge(label: badge, onLight: isLight),
                     const Spacer(),
                     Text(
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: titleColor,
                         fontSize: 19,
                         fontWeight: FontWeight.w900,
                         height: 1.1,
@@ -146,7 +156,7 @@ class CompactHeroSlide extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.88),
+                          color: muted,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -156,7 +166,7 @@ class CompactHeroSlide extends StatelessWidget {
                       const SizedBox(height: 10),
                       PromoCtaButton(
                         label: ctaLabel!,
-                        accentColor: accent,
+                        accentColor: ctaAccent,
                         leadingIcon: ctaLeadingIcon,
                       ),
                     ],
@@ -172,23 +182,30 @@ class CompactHeroSlide extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({required this.label});
+  const _Badge({required this.label, this.onLight = false});
 
   final String label;
+  final bool onLight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
+        color: onLight
+            ? Colors.black.withValues(alpha: 0.08)
+            : Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: onLight
+              ? Colors.black.withValues(alpha: 0.12)
+              : Colors.white.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: onLight ? Colors.black : Colors.white,
           fontSize: 9,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.1,

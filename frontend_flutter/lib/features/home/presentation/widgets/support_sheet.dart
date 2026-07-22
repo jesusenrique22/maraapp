@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/mara_theme.dart';
 import 'ai_chat_sheet.dart';
 
-/// Sheet de contacto con soporte MaraPlus.
+/// Sheet de contacto con soporte Farma Express.
 class SupportSheet {
   static const _phone = '+58 212 555 0100';
-  static const _email = 'soporte@maraplus.com';
+  static const _email = 'soporte@farmaexpress.com';
   static const _whatsapp = '+58 414 555 0100';
 
   static Future<void> show(BuildContext context) {
@@ -69,7 +69,7 @@ class SupportSheet {
               _SupportOption(
                 icon: Icons.auto_awesome_rounded,
                 iconColor: MaraColors.navyAccent,
-                title: 'Maraia (IA)',
+                title: 'Expressia (IA)',
                 subtitle: 'Asistente de salud inteligente (recetas, pastillas)',
                 onTap: () {
                   Navigator.pop(context);

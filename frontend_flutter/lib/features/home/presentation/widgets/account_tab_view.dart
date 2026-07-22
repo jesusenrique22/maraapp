@@ -57,7 +57,7 @@ class AccountTabView extends ConsumerWidget {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                'Tu cuenta MaraPlus',
+                'Tu cuenta Farma Express',
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 20,
@@ -149,7 +149,7 @@ class AccountTabView extends ConsumerWidget {
                 child: _QuickAction(
                   icon: Icons.local_hospital_rounded,
                   label: 'Medic Plus',
-                  color: const Color(0xFF0D47A1),
+                  color: MaraColors.green,
                   onTap: onEnterMedicPlus,
                 ),
               ),
@@ -663,7 +663,7 @@ class _SupportSection extends StatelessWidget {
   const _SupportSection();
 
   static const _phone = '+58 212 555 0100';
-  static const _email = 'soporte@maraplus.com';
+  static const _email = 'soporte@farmaexpress.com';
   static const _whatsapp = '+58 414 555 0100';
 
   static void _copy(BuildContext context, String value, String message) {

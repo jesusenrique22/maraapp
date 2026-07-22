@@ -158,7 +158,7 @@ export function buildSmartRecommendationResponse(
     lines.push('');
   }
 
-  lines.push('**Esto tenemos en MaraPlus y te puede servir:**');
+  lines.push('**Esto tenemos en Farma Express y te puede servir:**');
 
   for (const p of inStock) {
     lines.push(`• **${p.name}** — ${productBenefit(p)} **$${finalPrice(p).toFixed(2)}**`);
@@ -179,11 +179,11 @@ export function buildConversationContext(
 }
 
 export function buildVagueSymptomsPrompt(): string {
-  return 'Lamento que te sientas mal. Para recomendarte productos de nuestra farmacia, cuéntame un poco más:\n\n• ¿Tienes **fiebre** o temperatura alta?\n• ¿**Dolor de cabeza** o cuerpo?\n• ¿**Resfriado**, tos o congestión?\n• ¿**Acidez** o dolor de estómago?\n\nCon eso te muestro lo que tenemos en MaraPlus con botón para agregar al carrito.';
+  return 'Lamento que te sientas mal. Para recomendarte productos de nuestra farmacia, cuéntame un poco más:\n\n• ¿Tienes **fiebre** o temperatura alta?\n• ¿**Dolor de cabeza** o cuerpo?\n• ¿**Resfriado**, tos o congestión?\n• ¿**Acidez** o dolor de estómago?\n\nCon eso te muestro lo que tenemos en Farma Express con botón para agregar al carrito.';
 }
 
 export function buildOffTopicResponse(): string {
-  return 'Soy **Maraia**, asistente de **salud** de MaraPlus. Solo puedo ayudarte con:\n\n• Síntomas y malestares leves\n• Cómo usar medicamentos de venta libre\n• Productos de nuestra farmacia y tienda\n\nNo puedo ayudarte con recetas de cocina, tareas, clima u otros temas. **¿Qué síntoma o malestar tienes?**\n\n*Orientación general — no reemplaza consulta médica.*';
+  return 'Soy **Expressia**, asistente de **salud** de Farma Express. Solo puedo ayudarte con:\n\n• Síntomas y malestares leves\n• Cómo usar medicamentos de venta libre\n• Productos de nuestra farmacia y tienda\n\nNo puedo ayudarte con recetas de cocina, tareas, clima u otros temas. **¿Qué síntoma o malestar tienes?**\n\n*Orientación general — no reemplaza consulta médica.*';
 }
 
 const CARE_STEPS_BY_SYMPTOM: Record<string, string[]> = {

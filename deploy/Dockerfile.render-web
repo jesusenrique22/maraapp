@@ -1,11 +1,11 @@
-# Render: frontend Flutter (llama al API por URL externa, no proxy interno).
-# build: 2026-07-17-marapadel-strip
+# Render: frontend Flutter Farma Express (API por URL externa).
+# build: 2026-07-21-farmaexpress
 FROM ghcr.io/cirruslabs/flutter:stable AS flutter-build
 
 WORKDIR /app
 
 # Render pasa env vars como build-arg si el nombre coincide con ARG.
-ARG API_BASE_URL=https://REPLACE-WITH-YOUR-API.onrender.com
+ARG API_BASE_URL=https://farmaexpress-api.onrender.com
 
 COPY frontend_flutter/pubspec.yaml frontend_flutter/pubspec.lock ./
 RUN flutter pub get

@@ -235,7 +235,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                     child: Text(
                       _doctorName.isNotEmpty ? _doctorName[0] : 'D',
                       style: const TextStyle(
-                        color: Color(0xFF0D47A1),
+                        color: MaraColors.green,
                         fontWeight: FontWeight.w900,
                         fontSize: 22,
                       ),
@@ -257,7 +257,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                         Text(
                           _specialty,
                           style: const TextStyle(
-                            color: Color(0xFF0D47A1),
+                            color: MaraColors.green,
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
                           ),
@@ -313,7 +313,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 12,
-                        color: Color(0xFF0D47A1),
+                        color: MaraColors.green,
                       ),
                     ),
                     SizedBox(height: 6),
@@ -356,12 +356,12 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                         width: 64,
                         decoration: BoxDecoration(
                           color: selected
-                              ? const Color(0xFF0D47A1)
+                              ? MaraColors.green
                               : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: selected
-                                ? const Color(0xFF0D47A1)
+                                ? MaraColors.green
                                 : const Color(0xFFE2E8F0),
                           ),
                         ),
@@ -409,7 +409,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.event_rounded, color: Color(0xFF0D47A1)),
+                      const Icon(Icons.event_rounded, color: MaraColors.green),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -432,7 +432,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
+                    child: CircularProgressIndicator(color: MaraColors.green),
                   ),
                 )
               else if (_slotsError != null)
@@ -477,7 +477,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                                 }
                               : null,
                           showCheckmark: false,
-                          selectedColor: const Color(0xFF0D47A1),
+                          selectedColor: MaraColors.green,
                           backgroundColor: available
                               ? const Color(0xFFF8FAFC)
                               : isBooked
@@ -493,7 +493,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                           ),
                           side: BorderSide(
                             color: selected
-                                ? const Color(0xFF0D47A1)
+                                ? MaraColors.green
                                 : isBooked
                                     ? const Color(0xFFFECACA)
                                     : const Color(0xFFE2E8F0),
@@ -545,7 +545,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                   child: Text(
                     'Resumen: $_selectedLabel · ${_formatDateLabel(_selectedDate)} · \$$_fee',
                     style: const TextStyle(
-                      color: Color(0xFF0D47A1),
+                      color: MaraColors.green,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
@@ -558,7 +558,7 @@ class _BookAppointmentSheetState extends ConsumerState<BookAppointmentSheet> {
                 child: FilledButton(
                   onPressed: _submitting ? null : _confirmBooking,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D47A1),
+                    backgroundColor: MaraColors.green,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -596,7 +596,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: const Color(0xFF0D47A1)),
+        Icon(icon, size: 18, color: MaraColors.green),
         const SizedBox(width: 8),
         Text(
           label,

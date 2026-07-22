@@ -18,7 +18,7 @@ class SelectedBranchNotifier extends StateNotifier<Branch?> {
     _restore();
   }
 
-  static const _key = 'maraplus_selected_branch';
+  static const _key = 'farmaexpress_selected_branch';
 
   Future<void> _restore() async {
     final prefs = await SharedPreferences.getInstance();

@@ -94,26 +94,40 @@ class _PatientTelemedicineScreenState extends ConsumerState<PatientTelemedicineS
     );
   }
 
+  Map<String, dynamic>? _asDoctorMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<List<dynamic>>>(
       patientDoctorsProvider,
       (previous, next) {
         next.whenData((doctors) {
-          final uri = GoRouterState.of(context).uri;
-          final bookDoctorId = uri.queryParameters['bookDoctorId'];
-          if (bookDoctorId != null && bookDoctorId.isNotEmpty) {
-            final doctor = doctors.firstWhere(
-              (d) => d['id'] == bookDoctorId || d['doctorProfile']?['id'] == bookDoctorId,
-              orElse: () => null,
-            );
-            if (doctor != null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.go('/medic-plus');
-                _bookAppointment(doctor);
-              });
+          if (!mounted) return;
+          final bookDoctorId =
+              GoRouterState.of(context).uri.queryParameters['bookDoctorId'];
+          if (bookDoctorId == null || bookDoctorId.isEmpty) return;
+
+          Map<String, dynamic>? match;
+          for (final raw in doctors) {
+            final doc = _asDoctorMap(raw);
+            if (doc == null) continue;
+            final profile = _asDoctorMap(doc['doctorProfile']);
+            if (doc['id'] == bookDoctorId || profile?['id'] == bookDoctorId) {
+              match = doc;
+              break;
             }
           }
+          if (match == null) return;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            context.go('/medic-plus');
+            _bookAppointment(match!);
+          });
         });
       },
     );
@@ -131,10 +145,14 @@ class _PatientTelemedicineScreenState extends ConsumerState<PatientTelemedicineS
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFE3F2FD),
+                color: MaraColors.greenLight,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.local_hospital_rounded, color: Color(0xFF0D47A1), size: 20),
+              child: const Icon(
+                Icons.local_hospital_rounded,
+                color: MaraColors.green,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 10),
             const Text(
@@ -163,376 +181,342 @@ class _PatientTelemedicineScreenState extends ConsumerState<PatientTelemedicineS
           ),
           const SizedBox(width: 8),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+        // TabBar nativo (sin PreferredSize/iconos): evita "RenderBox was not laid out"
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: MaraColors.green,
+          unselectedLabelColor: MaraColors.textSecondary,
+          indicatorColor: MaraColors.green,
+          indicatorWeight: 3,
+          tabs: const [
+            Tab(text: 'Reservar'),
+            Tab(text: 'Mis Citas'),
+          ],
+        ),
+      ),
+      body: AnimatedBuilder(
+        animation: _tabController,
+        builder: (context, _) {
+          return IndexedStack(
+            index: _tabController.index,
+            children: [
+              _ReservarDoctorsTab(
+                searchController: _searchController,
+                filterQuery: _filterQuery,
+                doctorsAsync: doctorsAsync,
+                onFilterChanged: (val) => setState(() => _filterQuery = val.trim()),
+                onClearFilter: () {
+                  _searchController.clear();
+                  setState(() => _filterQuery = '');
+                },
+                onRetry: () => ref.invalidate(patientDoctorsProvider),
+                onBook: _bookAppointment,
+              ),
+              _PatientAppointmentsTab(
+                onOpenHub: _openConsultationHub,
+                parseProduct: _parseProduct,
+              ),
+            ],
+          );
+        },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: OutlinedButton.icon(
+            onPressed: () => context.go('/home'),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              side: const BorderSide(color: Color(0xFFCBD5E1)),
             ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              labelColor: const Color(0xFF0D47A1),
-              unselectedLabelColor: MaraColors.textSecondary,
-              indicatorColor: const Color(0xFF0D47A1),
-              indicatorWeight: 3,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: const [
-                Tab(
-                  icon: Icon(Icons.calendar_month_outlined, size: 18),
-                  text: 'Reservar',
-                ),
-                Tab(
-                  icon: Icon(Icons.history_edu_outlined, size: 18),
-                  text: 'Mis Citas',
-                ),
-              ],
+            icon: const Icon(Icons.storefront_outlined, color: MaraColors.textPrimary),
+            label: const Text(
+              'Volver a la Tienda',
+              style: TextStyle(
+                color: MaraColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // TAB 1: RESERVAR TURNO
-          Column(
-            children: [
-              // Search Bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar médicos por especialidad o nombre...',
-                    hintStyle: const TextStyle(fontSize: 13, color: MaraColors.textSecondary),
-                    prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF0D47A1), size: 20),
-                    suffixIcon: _filterQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.close_rounded),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _filterQuery = '');
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+    );
+  }
+}
+
+class _ReservarDoctorsTab extends StatelessWidget {
+  const _ReservarDoctorsTab({
+    required this.searchController,
+    required this.filterQuery,
+    required this.doctorsAsync,
+    required this.onFilterChanged,
+    required this.onClearFilter,
+    required this.onRetry,
+    required this.onBook,
+  });
+
+  final TextEditingController searchController;
+  final String filterQuery;
+  final AsyncValue<List<dynamic>> doctorsAsync;
+  final ValueChanged<String> onFilterChanged;
+  final VoidCallback onClearFilter;
+  final VoidCallback onRetry;
+  final Future<void> Function(Map<String, dynamic> doctor) onBook;
+
+  Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: 'Buscar médicos por especialidad o nombre...',
+              hintStyle: const TextStyle(
+                fontSize: 13,
+                color: MaraColors.textSecondary,
+              ),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: MaraColors.green,
+                size: 20,
+              ),
+              suffixIcon: filterQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: onClearFilter,
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: MaraColors.green, width: 1.2),
+              ),
+            ),
+            onChanged: onFilterChanged,
+          ),
+        ),
+        Expanded(
+          child: doctorsAsync.when(
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: MaraColors.green),
+            ),
+            error: (err, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.cloud_off_rounded, size: 40, color: MaraColors.rose),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'No se pudieron cargar los médicos',
+                      style: TextStyle(fontWeight: FontWeight.w800),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$err',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: MaraColors.textSecondary,
+                      ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFF0D47A1), width: 1.2),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: onRetry,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: MaraColors.green,
+                      ),
+                      child: const Text('Reintentar'),
                     ),
-                  ),
-                  onChanged: (val) {
-                    setState(() {
-                      _filterQuery = val.trim();
-                    });
-                  },
+                  ],
                 ),
               ),
+            ),
+            data: (doctors) {
+              final validDoctors = <Map<String, dynamic>>[];
+              for (final raw in doctors) {
+                final doc = _asMap(raw);
+                if (doc == null) continue;
+                final profile = _asMap(doc['doctorProfile']);
+                if (profile == null) continue;
 
-              // Doctors List
-              Expanded(
-                child: doctorsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0D47A1))),
-                  error: (err, _) => Center(child: Text('Error al cargar médicos: $err')),
-                  data: (doctors) {
-                    final validDoctors = doctors.where((doc) {
-                      final profile = doc['doctorProfile'];
-                      if (profile == null) return false;
+                final name = (doc['name'] ?? '').toString().toLowerCase();
+                final specialty =
+                    (profile['specialty'] ?? '').toString().toLowerCase();
+                final query = filterQuery.toLowerCase();
+                if (query.isEmpty ||
+                    name.contains(query) ||
+                    specialty.contains(query)) {
+                  validDoctors.add(doc);
+                }
+              }
 
-                      final name = (doc['name'] ?? '').toString().toLowerCase();
-                      final specialty =
-                          (profile['specialty'] ?? '').toString().toLowerCase();
-                      final query = _filterQuery.toLowerCase();
+              if (validDoctors.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Text(
+                      filterQuery.isNotEmpty
+                          ? 'No se encontraron médicos para "$filterQuery"'
+                          : 'No hay médicos disponibles por el momento.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: MaraColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                );
+              }
 
-                      if (query.isEmpty) return true;
-                      return name.contains(query) || specialty.contains(query);
-                    }).toList();
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                itemCount: validDoctors.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final doc = validDoctors[index];
+                  final profile = _asMap(doc['doctorProfile'])!;
+                  final specialty =
+                      profile['specialty'] as String? ?? 'Medicina General';
+                  final bio = profile['bio'] as String? ??
+                      'Médico profesional disponible para tele-consulta.';
+                  final fee =
+                      profile['consultationFee']?.toString() ?? '20.00';
+                  final doctorName = doc['name'] as String? ?? 'Médico';
+                  final initial =
+                      doctorName.isNotEmpty ? doctorName[0].toUpperCase() : 'D';
 
-                    if (validDoctors.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(40),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.person_search_rounded, size: 48, color: MaraColors.textTertiary),
-                              const SizedBox(height: 12),
-                              Text(
-                                _filterQuery.isNotEmpty
-                                    ? 'No se encontraron médicos para "$_filterQuery"'
-                                    : 'No hay médicos disponibles por el momento.',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: MaraColors.textSecondary, fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: validDoctors.length,
-                      itemBuilder: (context, index) {
-                        final doc = validDoctors[index] as Map<String, dynamic>;
-                        final profile =
-                            doc['doctorProfile'] as Map<String, dynamic>?;
-                        if (profile == null) return const SizedBox.shrink();
-
-                        final specialty =
-                            profile['specialty'] as String? ?? 'Medicina General';
-                        final bio = profile['bio'] as String? ??
-                            'Médico profesional disponible para tele-consulta.';
-                        final fee = profile['consultationFee']?.toString() ?? '20.00';
-                        final doctorName = doc['name'] as String? ?? 'Médico';
-
-                        // Mock ratings for premium medical app experience
-                        final rating = (4.7 + (index % 3) * 0.1).toStringAsFixed(1);
-                        final reviews = (85 + index * 12);
-
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: const Color(0xFFF1F5F9)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.03),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              )
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: Padding(
-                                padding: const EdgeInsets.all(18),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Doctor Icon Avatar
-                                    Column(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundColor: const Color(0xFFE3F2FD),
-                                          child: Text(
-                                            doctorName.isNotEmpty ? doctorName[0] : 'D',
-                                            style: const TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color(0xFF0D47A1),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFFEF08A),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(Icons.star_rounded, color: MaraColors.amber, size: 12),
-                                              const SizedBox(width: 3),
-                                              Text(
-                                                '$rating ($reviews)',
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: MaraColors.textPrimary,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                  return Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => onBook(doc),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 26,
+                                  backgroundColor: MaraColors.greenLight,
+                                  child: Text(
+                                    initial,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: MaraColors.green,
                                     ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  doctorName,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: MaraColors.textPrimary,
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              Container(
-                                                width: 8,
-                                                height: 8,
-                                                decoration: const BoxDecoration(
-                                                  color: MaraColors.green,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              const Text(
-                                                'Disponible',
-                                                style: TextStyle(
-                                                  color: MaraColors.green,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 3),
-                                          Text(
-                                            specialty,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w800,
-                                              color: Color(0xFF0D47A1),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            bio,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: MaraColors.textSecondary,
-                                              height: 1.4,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 14),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'Costo Consulta',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: MaraColors.textTertiary,
-                                                      fontWeight: FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    '\$$fee',
-                                                    style: const TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: FontWeight.w900,
-                                                      color: MaraColors.textPrimary,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Flexible(
-                                                child: ElevatedButton(
-                                                  onPressed: () => _bookAppointment(doc),
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: const Color(0xFF0D47A1),
-                                                    foregroundColor: Colors.white,
-                                                    elevation: 0,
-                                                    minimumSize: Size.zero,
-                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 14,
-                                                      vertical: 10,
-                                                    ),
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(12),
-                                                    ),
-                                                  ),
-                                                  child: const Text(
-                                                    'Reservar',
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w800,
-                                                      fontSize: 12.5,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        doctorName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          color: MaraColors.textPrimary,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        specialty,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          color: MaraColors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '\$$fee',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w900,
+                                    color: MaraColors.textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              bio,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: MaraColors.textSecondary,
+                                height: 1.35,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: () => onBook(doc),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: MaraColors.green,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Reservar cita',
+                                  style: TextStyle(fontWeight: FontWeight.w800),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          // TAB 2: MIS RECETAS Y CITAS
-          _PatientAppointmentsTab(
-            onOpenHub: _openConsultationHub,
-            parseProduct: _parseProduct,
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
-            )
-          ]
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              OutlinedButton.icon(
-                onPressed: () => context.go('/home'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                icon: const Icon(Icons.storefront_outlined, color: MaraColors.textPrimary),
-                label: const Text(
-                  'Volver a la Tienda',
-                  style: TextStyle(color: MaraColors.textPrimary, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -552,7 +536,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
 
     return appointmentsAsync.when(
       loading: () => const Center(
-        child: CircularProgressIndicator(color: Color(0xFF0D47A1)),
+        child: CircularProgressIndicator(color: MaraColors.green),
       ),
       error: (err, _) => Center(child: Text('Error al cargar historial: $err')),
       data: (appointments) {
@@ -659,7 +643,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
                                   specialty,
                                   style: const TextStyle(
                                     fontSize: 11,
-                                    color: Color(0xFF0D47A1),
+                                    color: MaraColors.green,
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
@@ -773,7 +757,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
                             style: FilledButton.styleFrom(
                               backgroundColor: status == 'IN_PROGRESS'
                                   ? MaraColors.green
-                                  : const Color(0xFF0D47A1),
+                                  : MaraColors.green,
                               foregroundColor: Colors.white,
                               elevation: 0,
                               minimumSize: const Size.fromHeight(48),
@@ -802,7 +786,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
                             Icon(
                               Icons.assignment_turned_in_rounded,
                               size: 14,
-                              color: Color(0xFF0D47A1),
+                              color: MaraColors.green,
                             ),
                             SizedBox(width: 6),
                             Text(
@@ -835,7 +819,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    color: Color(0xFF0D47A1),
+                                    color: MaraColors.green,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -896,7 +880,7 @@ class _PatientAppointmentsTab extends ConsumerWidget {
                                       }
                                     },
                                     style: FilledButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0D47A1),
+                                      backgroundColor: MaraColors.green,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),

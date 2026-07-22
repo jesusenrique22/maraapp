@@ -411,7 +411,7 @@ class AdminBanner {
       id: json['id'] as String,
       title: json['title'] as String,
       subtitle: json['subtitle'] as String?,
-      imageUrl: json['imageUrl'] as String,
+      imageUrl: (json['imageUrl'] as String?) ?? '',
       backgroundColor: json['backgroundColor'] as String? ?? '#1B3A8A',
       textColor: json['textColor'] as String? ?? '#FFFFFF',
       badgeText: json['badgeText'] as String?,

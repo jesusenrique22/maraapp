@@ -138,34 +138,35 @@ class _MaraLoginScreenState extends ConsumerState<MaraLoginScreen>
 
   _LoginCopy get _copy => switch (widget.loginContext) {
         MaraLoginContext.staff => const _LoginCopy(
-            badge: 'PERSONAL MARAPLUS',
+            badge: 'PERSONAL FARMA EXPRESS',
             badgeIcon: Icons.admin_panel_settings_outlined,
-            badgeColor: Color(0xFFF3E8FF),
-            badgeTextColor: MaraColors.violet,
+            badgeColor: Color(0xFFFFE8D6),
+            badgeTextColor: MaraColors.greenDark,
             title: 'Acceso Personal',
             registerTitle: 'Acceso Personal',
             subtitle: 'Panel administrativo y consultas médicas.',
             registerSubtitle: 'Contacta al administrador para obtener acceso.',
-            accent: MaraColors.violet,
+            accent: MaraColors.green,
             sideTitle: 'Panel\nProfesional',
-            sideBody: 'Gestión integrada de inventario, consultas médicas, pacientes y farmacia.',
+            sideBody:
+                'Gestión integrada de inventario, consultas médicas, pacientes y farmacia Farma Express.',
             sideIcon: Icons.dashboard_rounded,
           ),
         _ => const _LoginCopy(
-            badge: 'CUENTA ÚNICA MARAPLUS',
+            badge: 'CUENTA FARMA EXPRESS',
             badgeIcon: Icons.all_inclusive_rounded,
-            badgeColor: Color(0xFFE8EAF6),
-            badgeTextColor: MaraColors.navyAccent,
-            title: 'Inicia sesión en MaraPlus',
-            registerTitle: 'Crea tu cuenta en MaraPlus',
+            badgeColor: Color(0xFFFFE8D6),
+            badgeTextColor: MaraColors.greenDark,
+            title: 'Inicia sesión en Farma Express',
+            registerTitle: 'Crea tu cuenta en Farma Express',
             subtitle:
-                'Una sola cuenta para comprar en farmacia, panadería, mascotas y agendar consultas en Medic Plus.',
+                'Una sola cuenta para comprar en farmacia, panadería y más, y agendar consultas en Medic Plus.',
             registerSubtitle:
-                'Regístrate gratis y accede a compras rápidas, envíos a sucursal y consultas médicas virtuales.',
-            accent: MaraColors.navyAccent,
-            sideTitle: 'Todo MaraPlus\nen un solo lugar',
+                'Regístrate gratis y accede a compras rápidas, retiro en sucursal y consultas médicas virtuales.',
+            accent: MaraColors.green,
+            sideTitle: 'Todo Farma Express\nen un solo lugar',
             sideBody:
-                'Con tu cuenta única de MaraPlus puedes hacer compras en la tienda, recibir medicamentos y consultar con médicos en vivo a través de Medic Plus.',
+                'Compra en tienda, recibe medicamentos y consulta con médicos en vivo a través de Medic Plus, desde Farma Express.',
             sideIcon: Icons.auto_awesome_rounded,
           ),
       };
@@ -682,7 +683,7 @@ class _SidePromoPanel extends StatelessWidget {
               : const [
                   Color(0xFF0B1E40),
                   Color(0xFF1E3A8A),
-                  Color(0xFF2563EB),
+                  MaraColors.green,
                 ],
         ),
       ),

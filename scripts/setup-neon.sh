@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Configura MaraPlus en Neon (proyecto smart-medic u otro).
+# Configura Farma Express en Neon.
 #
 # Uso:
-#   1. En Neon → smart-medic → Connect → copia las URLs
+#   1. En Neon → Connect → copia las URLs
 #   2. Crea backend-nestjs/.env.neon con:
 #        DATABASE_URL="postgresql://...?sslmode=require"   # Pooled
 #        DIRECT_URL="postgresql://...?sslmode=require"     # Direct
@@ -17,8 +17,8 @@ BACKEND="$ROOT/backend-nestjs"
 if [[ ! -f "$ENV_NEON" ]]; then
   echo "❌ Falta $ENV_NEON"
   echo ""
-  echo "En Neon (smart-medic):"
-  echo "  1. Abre el proyecto smart-medic"
+  echo "En Neon:"
+  echo "  1. Abre el proyecto"
   echo "  2. Botón «Connect»"
   echo "  3. Copia «Pooled connection» → DATABASE_URL"
   echo "  4. Copia «Direct connection»  → DIRECT_URL"
@@ -53,10 +53,10 @@ echo "▶ Sembrando catálogo, admin y datos iniciales..."
 DATABASE_URL="$DATABASE_URL" DIRECT_URL="$DIRECT_URL" npx prisma db seed
 
 echo ""
-echo "✅ MaraPlus listo en Neon"
+echo "✅ Farma Express listo en Neon"
 echo ""
-echo "Pega estas mismas URLs en Render → maraplus-api → Environment:"
+echo "Pega estas mismas URLs en Render → farmaexpress-api → Environment:"
 echo "  DATABASE_URL  = (Pooled connection)"
 echo "  DIRECT_URL    = (Direct connection)"
 echo ""
-echo "Admin: admin@maraplus.com / (tu ADMIN_PASSWORD del seed)"
+echo "Admin: admin@farmaexpress.com / (tu ADMIN_PASSWORD del seed)"

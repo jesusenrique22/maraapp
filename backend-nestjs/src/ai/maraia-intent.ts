@@ -128,7 +128,7 @@ const HEALTH_TOPIC_PATTERNS = [
   /salud|enferm|consulta m[eé]dica|doctor|m[eé]dico/i,
   /hidrat|deshidrat|vitamina|antibi[oó]tico/i,
   /embaraz|embarazo|n[aá]usea|v[oó]mito|diarrea/i,
-  /maraplus|carrito|producto/i,
+  /farmaexpress|carrito|producto/i,
 ];
 
 export function isFollowUpQuestion(message: string): boolean {
@@ -194,7 +194,7 @@ export function historyAlreadyRecommendedProducts(
     (h) =>
       h.role === 'model' &&
       (/\[AGREGAR_CARRITO:/.test(h.text) ||
-        /En MaraPlus tenemos disponible/i.test(h.text) ||
+        /En Farma Express tenemos disponible/i.test(h.text) ||
         /Revis[eé] nuestro cat[aá]logo/i.test(h.text)),
   );
 }
