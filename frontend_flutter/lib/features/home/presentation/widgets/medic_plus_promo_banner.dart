@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/mara_theme.dart';
 import 'promo_cta_button.dart';
 
-/// Banner promocional de Salud360 para la zona de publicidad del home.
+/// Banner promocional de Medic Express para la zona de publicidad del home.
 class MedicPlusPromoBanner extends StatelessWidget {
   const MedicPlusPromoBanner({super.key, required this.onTap});
 
@@ -59,7 +59,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(
-                            'SALUD360',
+                            'MEDIC EXPRESS',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 9,
@@ -70,7 +70,7 @@ class MedicPlusPromoBanner extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          'Salud360:\nConsultas Online',
+                          'Medic Express:\nConsultas Online',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,

@@ -277,10 +277,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final useSession = await AccountContinueSheet.show(
         context,
         user: auth.session!.user,
-        title: '¿Entrar a Salud360?',
+        title: '¿Entrar a Medic Express?',
         subtitle:
             'Puedes usar la misma cuenta con la que compras en la tienda.',
-        confirmLabel: 'Entrar a Salud360',
+        confirmLabel: 'Entrar a Medic Express',
         showPasswordHint: true,
       );
 
@@ -306,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Salud360 está disponible para cuentas de paciente.'),
+        content: Text('Medic Express está disponible para cuentas de paciente.'),
         backgroundColor: MaraColors.rose,
       ),
     );
@@ -401,7 +401,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const Divider(height: 24, thickness: 1, color: Color(0xFFF1F5F9)),
               const _NotificationItem(
                 title: 'Nueva promoción ✦',
-                body: 'Obtén 15% de descuento en medicamentos seleccionados usando tu seguro Salud360.',
+                body: 'Obtén 15% de descuento en medicamentos seleccionados usando tu seguro Medic Express.',
                 time: 'Hace 2 horas',
                 isNew: true,
               ),
@@ -1061,7 +1061,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const NavigationDestination(
               icon: Icon(Icons.local_hospital_outlined),
               selectedIcon: Icon(Icons.local_hospital_rounded, color: MaraColors.green),
-              label: 'Salud360',
+              label: 'Medic Express',
             ),
             const NavigationDestination(
               icon: Icon(Icons.shopping_bag_outlined, color: MaraColors.green),

@@ -4,7 +4,7 @@ import '../../../../core/config/brand_config.dart';
 import '../../../../core/theme/mara_theme.dart';
 import 'compact_hero_slide.dart';
 
-/// Slide de Salud360 — naranja Farma Express.
+/// Slide de Medic Express — naranja Farma Express.
 class MedicPlusHeroSlide extends StatelessWidget {
   const MedicPlusHeroSlide({super.key, required this.onTap});
 

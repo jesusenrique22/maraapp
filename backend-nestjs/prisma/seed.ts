@@ -103,14 +103,14 @@ async function main() {
     where: { userId: doctorUser.id },
     update: {
       specialty: 'Cardiología y Medicina General',
-      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Salud360 en Farma Express.',
+      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Medic Express en Farma Express.',
       consultationFee: 25.0,
       isActive: true,
     },
     create: {
       userId: doctorUser.id,
       specialty: 'Cardiología y Medicina General',
-      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Salud360 en Farma Express.',
+      bio: 'Especialista en cuidado cardiovascular y atención médica primaria con más de 10 años de experiencia. Disponible vía Medic Express en Farma Express.',
       consultationFee: 25.0,
     },
   });
@@ -122,7 +122,7 @@ async function main() {
       password: 'Doctor123!',
       name: 'Dra. María González',
       specialty: 'Pediatría',
-      bio: 'Pediatra con enfoque en control de niños sanos, vacunas y seguimiento del desarrollo. Salud360 · Farma Express.',
+      bio: 'Pediatra con enfoque en control de niños sanos, vacunas y seguimiento del desarrollo. Medic Express · Farma Express.',
       fee: 22.0,
     },
     {
@@ -131,7 +131,7 @@ async function main() {
       password: 'Doctor123!',
       name: 'Dr. Roberto Silva',
       specialty: 'Dermatología',
-      bio: 'Especialista en dermatología clínica, acné, alergias cutáneas y cuidado de la piel. Salud360 · Farma Express.',
+      bio: 'Especialista en dermatología clínica, acné, alergias cutáneas y cuidado de la piel. Medic Express · Farma Express.',
       fee: 28.0,
     },
   ];
@@ -902,13 +902,13 @@ async function main() {
       isActive: true,
     },
     {
-      title: 'Salud360: consulta online',
+      title: 'Medic Express: consulta online',
       subtitle: 'Videollamada y receta digital · 24 horas',
       imageUrl:
         'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
       backgroundColor: '#0A1628',
       textColor: '#FFFFFF',
-      badgeText: 'SALUD360',
+      badgeText: 'MEDIC EXPRESS',
       buttonText: 'Consultar ahora',
       placement: BannerPlacement.HOME_HERO,
       sortOrder: 1,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/mara_theme.dart';
 import '../../../admin/domain/admin_models.dart';
 
-/// Confirma usar la sesión activa (ej. tienda → Salud360).
+/// Confirma usar la sesión activa (ej. tienda → Medic Express).
 class AccountContinueSheet extends StatelessWidget {
   const AccountContinueSheet({
     super.key,

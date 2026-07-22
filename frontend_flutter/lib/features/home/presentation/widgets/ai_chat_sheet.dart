@@ -423,7 +423,7 @@ class _ChatBubble extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         const Text(
-                          '📅 Reservar cita en Salud360',
+                          '📅 Reservar cita en Medic Express',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,

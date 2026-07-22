@@ -21,13 +21,13 @@ const banners = [
     isActive: true,
   },
   {
-    title: 'Salud360: consulta online',
+    title: 'Medic Express: consulta online',
     subtitle: 'Videollamada y receta digital · 24 horas',
     imageUrl:
       'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=900&auto=format&fit=crop',
     backgroundColor: '#0A1628',
     textColor: '#FFFFFF',
-    badgeText: 'SALUD360',
+    badgeText: 'MEDIC EXPRESS',
     buttonText: 'Consultar ahora',
     placement: BannerPlacement.HOME_HERO,
     sortOrder: 1,

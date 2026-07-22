@@ -8,9 +8,9 @@ class BrandConfig {
   static const String adminDemoEmail = 'admin@farmaexpress.com';
 
   /// Telemedicina (antes Medic Plus).
-  static const String medicPlusName = 'Salud360';
+  static const String medicPlusName = 'Medic Express';
   static const String medicPlusSubtitle =
-      'Consultas online 360° desde Farma Express · Receta digital';
+      'Consultas online desde Farma Express · Receta digital';
 
   static const String loyaltyName = 'Club FarmaExpress';
   static const String loyaltyTitle = 'Club FarmaExpress: gana con cada compra';

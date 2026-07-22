@@ -160,13 +160,13 @@ class _MaraLoginScreenState extends ConsumerState<MaraLoginScreen>
             title: 'Inicia sesión en Farma Express',
             registerTitle: 'Crea tu cuenta en Farma Express',
             subtitle:
-                'Una sola cuenta para comprar en farmacia, panadería y más, y agendar consultas en Salud360.',
+                'Una sola cuenta para comprar en farmacia, panadería y más, y agendar consultas en Medic Express.',
             registerSubtitle:
                 'Regístrate gratis y accede a compras rápidas, retiro en sucursal y consultas médicas virtuales.',
             accent: MaraColors.green,
             sideTitle: 'Todo Farma Express\nen un solo lugar',
             sideBody:
-                'Compra en tienda, recibe medicamentos y consulta con médicos en vivo a través de Salud360, desde Farma Express.',
+                'Compra en tienda, recibe medicamentos y consulta con médicos en vivo a través de Medic Express, desde Farma Express.',
             sideIcon: Icons.auto_awesome_rounded,
           ),
       };
@@ -230,7 +230,7 @@ class _MaraLoginScreenState extends ConsumerState<MaraLoginScreen>
                         const SizedBox(height: 16),
                         Text(
                           widget.loginContext == MaraLoginContext.medicPlus
-                              ? '¿Entrar a Salud360?'
+                              ? '¿Entrar a Medic Express?'
                               : 'Ya iniciaste sesión',
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
@@ -267,7 +267,7 @@ class _MaraLoginScreenState extends ConsumerState<MaraLoginScreen>
                             ),
                             child: Text(
                               widget.loginContext == MaraLoginContext.medicPlus
-                                  ? 'Entrar a Salud360'
+                                  ? 'Entrar a Medic Express'
                                   : 'Continuar a la tienda',
                               style: const TextStyle(fontWeight: FontWeight.w800),
                             ),

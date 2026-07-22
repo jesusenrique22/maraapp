@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/mara_theme.dart';
 import '../../domain/models/catalog_models.dart';
 
-/// Franja compacta de delivery — va debajo de Salud360 sin saturar el home.
+/// Franja compacta de delivery — va debajo de Medic Express sin saturar el home.
 class DeliveryInfoStrip extends StatelessWidget {
   const DeliveryInfoStrip({super.key, this.banner});
 

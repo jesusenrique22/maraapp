@@ -68,7 +68,7 @@ class AccountTabView extends ConsumerWidget {
             const SizedBox(height: 8),
             const Text(
               'Inicia sesión para ver tu historial de compras, '
-              'guardar tu carrito y acceder a Salud360 con la misma cuenta.',
+              'guardar tu carrito y acceder a Medic Express con la misma cuenta.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: MaraColors.textSecondary,
@@ -96,7 +96,7 @@ class AccountTabView extends ConsumerWidget {
                   AuthRedirect.medicPlusLoginPath(redirect: '/medic-plus'),
                 ),
                 icon: const Icon(Icons.local_hospital_outlined),
-                label: const Text('Iniciar sesión — Salud360'),
+                label: const Text('Iniciar sesión — Medic Express'),
               ),
             ),
             const SizedBox(height: 32),
@@ -148,7 +148,7 @@ class AccountTabView extends ConsumerWidget {
               Expanded(
                 child: _QuickAction(
                   icon: Icons.local_hospital_rounded,
-                  label: 'Salud360',
+                  label: 'Medic Express',
                   color: MaraColors.green,
                   onTap: onEnterMedicPlus,
                 ),

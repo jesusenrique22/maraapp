@@ -76,7 +76,7 @@ class AdminPatientsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: AdminListHeader(
                   title: '${patients.length} pacientes',
-                  subtitle: 'Cuentas de clientes y usuarios de Salud360.',
+                  subtitle: 'Cuentas de clientes y usuarios de Medic Express.',
                 ),
               ),
               Expanded(
