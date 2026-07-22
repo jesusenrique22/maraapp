@@ -6,13 +6,17 @@ class BrandConfig {
   static const String hoursLabel = 'Abierto 24 horas';
   static const String supportEmail = 'soporte@farmaexpress.com';
   static const String adminDemoEmail = 'admin@farmaexpress.com';
-  static const String medicPlusName = 'Medic Plus';
+
+  /// Telemedicina (antes Medic Plus).
+  static const String medicPlusName = 'Salud360';
   static const String medicPlusSubtitle =
-      'Consultas online desde Farma Express · Receta digital';
+      'Consultas online 360° desde Farma Express · Receta digital';
+
   static const String loyaltyName = 'Club FarmaExpress';
   static const String loyaltyTitle = 'Club FarmaExpress: gana con cada compra';
   static const String loyaltySubtitle =
       'Suma puntos en farmacia, panadería y más';
+
   /// Asistente de salud en la app (nombre visible al cliente).
   static const String aiAssistantName = 'Expressia';
 }

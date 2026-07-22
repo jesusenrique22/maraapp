@@ -94,7 +94,7 @@ class WelcomeScreen extends StatelessWidget {
                     onPressed: () => context.go(
                       AuthRedirect.medicPlusLoginPath(redirect: '/medic-plus'),
                     ),
-                    child: const Text('Medic Plus — Iniciar sesión'),
+                    child: const Text('Salud360 — Iniciar sesión'),
                   ),
                 ),
                 const SizedBox(height: 24),

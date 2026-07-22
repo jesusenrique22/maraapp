@@ -1,4 +1,4 @@
-/// Contexto de login: tienda (inventario) vs Medic Plus (telemedicina).
+/// Contexto de login: tienda (inventario) vs Salud360 (telemedicina).
 enum MaraLoginContext {
   store,
   medicPlus,

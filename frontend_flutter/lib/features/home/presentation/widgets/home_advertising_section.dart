@@ -7,7 +7,7 @@ import 'cashea_hero_slide.dart';
 import 'mara_puntos_hero_slide.dart';
 import 'medic_plus_hero_slide.dart';
 
-/// Carrusel Farma Express: Cashea + Club + Medic Plus + banners del catálogo.
+/// Carrusel Farma Express: Cashea + Club + Salud360 + banners del catálogo.
 class HomeAdvertisingSection extends StatelessWidget {
   const HomeAdvertisingSection({
     super.key,
@@ -39,6 +39,8 @@ class HomeAdvertisingSection extends StatelessWidget {
               !t.contains('cashea') &&
               !t.contains('medic plus') &&
               !t.contains('medicplus') &&
+              !t.contains('salud360') &&
+              !t.contains('salud 360') &&
               !t.contains('dog plus') &&
               !t.contains('padel') &&
               !t.contains('pádel') &&

@@ -158,7 +158,7 @@ List<AdminDirectoryItem> _directoryItems(
     ),
     AdminDirectoryItem(
       title: 'Pacientes',
-      subtitle: 'Clientes y usuarios de Medic Plus',
+      subtitle: 'Clientes y usuarios de Salud360',
       count: _formatCount(stats.patients),
       icon: Icons.people_outline,
       onTap: () => context.go('/admin/patients'),

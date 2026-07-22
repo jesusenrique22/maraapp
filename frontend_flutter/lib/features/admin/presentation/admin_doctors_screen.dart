@@ -225,7 +225,7 @@ class _AdminDoctorsScreenState extends ConsumerState<AdminDoctorsScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: AdminListHeader(
                   title: '${doctors.length} médicos',
-                  subtitle: 'Especialidades, tarifas y disponibilidad Medic Plus.',
+                  subtitle: 'Especialidades, tarifas y disponibilidad Salud360.',
                 ),
               ),
               Expanded(

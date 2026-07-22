@@ -156,7 +156,7 @@ class _PatientTelemedicineScreenState extends ConsumerState<PatientTelemedicineS
             ),
             const SizedBox(width: 10),
             const Text(
-              'Medic Plus',
+              'Salud360',
               style: TextStyle(
                 color: MaraColors.textPrimary,
                 fontWeight: FontWeight.w900,

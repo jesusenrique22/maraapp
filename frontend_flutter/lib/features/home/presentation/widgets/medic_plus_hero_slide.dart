@@ -4,7 +4,7 @@ import '../../../../core/config/brand_config.dart';
 import '../../../../core/theme/mara_theme.dart';
 import 'compact_hero_slide.dart';
 
-/// Slide de Medic Plus — naranja Farma Express.
+/// Slide de Salud360 — naranja Farma Express.
 class MedicPlusHeroSlide extends StatelessWidget {
   const MedicPlusHeroSlide({super.key, required this.onTap});
 
@@ -15,7 +15,7 @@ class MedicPlusHeroSlide extends StatelessWidget {
     return CompactHeroSlide(
       onTap: onTap,
       badge: BrandConfig.medicPlusName.toUpperCase(),
-      title: 'Medic Plus: consulta desde Farma Express',
+      title: '${BrandConfig.medicPlusName}: consulta desde Farma Express',
       subtitle: BrandConfig.medicPlusSubtitle,
       colors: const [
         MaraColors.green,
