@@ -1061,7 +1061,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const NavigationDestination(
               icon: Icon(Icons.local_hospital_outlined),
               selectedIcon: Icon(Icons.local_hospital_rounded, color: MaraColors.green),
-              label: 'Medic Express',
+              label: 'Medic',
             ),
             const NavigationDestination(
               icon: Icon(Icons.shopping_bag_outlined, color: MaraColors.green),
