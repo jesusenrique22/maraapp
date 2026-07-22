@@ -48,8 +48,9 @@ class AdminProductsScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                 child: AdminListHeader(
-                  title: '${products.length} productos',
-                  subtitle: 'Catálogo, precios, stock e imágenes.',
+                  title: 'Productos',
+                  subtitle:
+                      "Mostrando los ${products.length} más recientes. El total del catálogo está en Inicio.",
                 ),
               ),
               Expanded(

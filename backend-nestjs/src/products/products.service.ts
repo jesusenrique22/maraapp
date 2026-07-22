@@ -115,10 +115,28 @@ export class ProductsService {
     );
   }
 
-  async findAllAdmin() {
+  async findAllAdmin(options?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+  }) {
+    const limit = Math.min(Math.max(options?.limit ?? 120, 1), 500);
+    const offset = Math.max(options?.offset ?? 0, 0);
+    const search = options?.search?.trim();
+
     const products = await this.prisma.product.findMany({
+      where: search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { sku: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : undefined,
       include: this.inventory.productInclude,
       orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
     });
 
     const stockMap = await this.inventory.getTotalStockMap(

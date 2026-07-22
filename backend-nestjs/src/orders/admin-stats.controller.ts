@@ -11,6 +11,11 @@ import { AdminStatsService } from './admin-stats.service';
 export class AdminStatsController {
   constructor(private readonly statsService: AdminStatsService) {}
 
+  @Get('overview')
+  getOverview() {
+    return this.statsService.getOverview();
+  }
+
   @Get()
   getDashboard(@Query('days') days?: string) {
     const parsed = days ? Number.parseInt(days, 10) : 30;

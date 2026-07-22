@@ -52,20 +52,14 @@ class AdminRepository {
 
   Future<AdminStats> fetchStats() async {
     try {
-      await _api.getMap('/health');
-      final products = await _api.getList('/admin/products');
-      final categories = await _api.getList('/admin/categories');
-      final banners = await _api.getList('/admin/banners');
-      final doctors = await _api.getList('/consultations/admin/doctors');
-      final patients = await _api.getList('/consultations/admin/patients');
-
+      final data = await _api.getMap('/admin/stats/overview');
       return AdminStats(
-        products: products.length,
-        categories: categories.length,
-        banners: banners.length,
-        doctors: doctors.length,
-        patients: patients.length,
-        apiOnline: true,
+        products: (data['products'] as num?)?.toInt() ?? 0,
+        categories: (data['categories'] as num?)?.toInt() ?? 0,
+        banners: (data['banners'] as num?)?.toInt() ?? 0,
+        doctors: (data['doctors'] as num?)?.toInt() ?? 0,
+        patients: (data['patients'] as num?)?.toInt() ?? 0,
+        apiOnline: data['apiOnline'] as bool? ?? true,
       );
     } catch (_) {
       return const AdminStats(
@@ -87,8 +81,19 @@ class AdminRepository {
     return AdminSalesDashboard.fromJson(response);
   }
 
-  Future<List<Product>> fetchProducts() async {
-    final data = await _api.getList('/admin/products');
+  Future<List<Product>> fetchProducts({
+    int limit = 120,
+    int offset = 0,
+    String? search,
+  }) async {
+    final data = await _api.getList(
+      '/admin/products',
+      query: {
+        'limit': '$limit',
+        'offset': '$offset',
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      },
+    );
     return data
         .map((item) => Product.fromJson(item as Map<String, dynamic>))
         .toList();

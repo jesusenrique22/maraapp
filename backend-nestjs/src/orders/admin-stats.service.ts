@@ -10,6 +10,29 @@ export class AdminStatsService {
     private readonly inventory: InventoryService,
   ) {}
 
+  /** Conteos ligeros para el Inicio del admin (no descarga catálogo completo). */
+  async getOverview() {
+    const [products, categories, banners, doctors, patients, branches] =
+      await Promise.all([
+        this.prisma.product.count({ where: { isActive: true } }),
+        this.prisma.category.count(),
+        this.prisma.banner.count(),
+        this.prisma.user.count({ where: { role: 'DOCTOR', isActive: true } }),
+        this.prisma.user.count({ where: { role: 'CUSTOMER', isActive: true } }),
+        this.prisma.branch.count({ where: { isActive: true } }),
+      ]);
+
+    return {
+      products,
+      categories,
+      banners,
+      doctors,
+      patients,
+      branches,
+      apiOnline: true,
+    };
+  }
+
   async getDashboard(days = 30) {
     const safeDays = Math.min(Math.max(days, 7), 90);
     const from = new Date();

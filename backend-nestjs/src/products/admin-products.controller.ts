@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
@@ -28,8 +29,18 @@ export class AdminProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll() {
-    return this.productsService.findAllAdmin();
+  findAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+    @Query('search') search?: string,
+  ) {
+    const parsedLimit = limit ? Number.parseInt(limit, 10) : 120;
+    const parsedOffset = offset ? Number.parseInt(offset, 10) : 0;
+    return this.productsService.findAllAdmin({
+      limit: Number.isFinite(parsedLimit) ? parsedLimit : 120,
+      offset: Number.isFinite(parsedOffset) ? parsedOffset : 0,
+      search: search?.trim() || undefined,
+    });
   }
 
   @Post()
