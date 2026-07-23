@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/config/app_config.dart';
+import 'core/pwa/widgets/pwa_install_host.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/mara_theme.dart';
 
@@ -21,6 +22,11 @@ class MaraPlusApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: MaraTheme.light,
       routerConfig: router,
+      builder: (context, child) {
+        return PwaInstallHost(
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

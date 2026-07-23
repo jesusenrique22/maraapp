@@ -1,46 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Farma Express — Todo lo que buscas en un solo lugar">
+  <meta name="theme-color" content="#FF6A00">
+  <meta name="color-scheme" content="light">
 
-  <!-- iOS meta tags & icons -->
+  <!-- Android / Chrome PWA -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="application-name" content="Farma Express">
+
+  <!-- iOS “Añadir a pantalla de inicio” -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Farma Express">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
   <title>Farma Express</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    Bridge PWA: captura beforeinstallprompt antes de que cargue Flutter.
+    Expone window.__farmaPwa para el cliente Dart (js_interop).
+  -->
+  <script>
+    (function () {
+      var listeners = [];
+
+      function notify() {
+        for (var i = 0; i < listeners.length; i++) {
+          try { listeners[i](); } catch (_) {}
+        }
+        try {
+          window.dispatchEvent(new Event('farma-pwa-changed'));
+        } catch (_) {}
+      }
+
+      var api = {
+        deferred: null,
+        isStandalone: function () {
+          try {
+            if (window.matchMedia('(display-mode: standalone)').matches) return true;
+            if (window.matchMedia('(display-mode: fullscreen)').matches) return true;
+            if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
+          } catch (_) {}
+          return !!(window.navigator && window.navigator.standalone === true);
+        },
+        get canPrompt() {
+          return !!this.deferred;
+        },
+        isIos: function () {
+          var ua = (window.navigator && window.navigator.userAgent) || '';
+          var iOS = /iPad|iPhone|iPod/.test(ua);
+          var iPadOs = ua.indexOf('Mac') !== -1 && 'ontouchend' in document;
+          return iOS || iPadOs;
+        },
+        onChange: function (cb) {
+          if (typeof cb !== 'function') return function () {};
+          listeners.push(cb);
+          return function () {
+            listeners = listeners.filter(function (x) { return x !== cb; });
+          };
+        },
+        promptInstall: function () {
+          var self = this;
+          if (!self.deferred) {
+            return Promise.resolve('unavailable');
+          }
+          var event = self.deferred;
+          self.deferred = null;
+          event.prompt();
+          return event.userChoice.then(function (choice) {
+            notify();
+            return (choice && choice.outcome) ? choice.outcome : 'dismissed';
+          }).catch(function () {
+            notify();
+            return 'dismissed';
+          });
+        },
+      };
+
+      window.__farmaPwa = api;
+
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        api.deferred = e;
+        notify();
+      });
+
+      window.addEventListener('appinstalled', function () {
+        api.deferred = null;
+        notify();
+      });
+    })();
+  </script>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
