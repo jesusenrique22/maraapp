@@ -4,7 +4,7 @@
 # 2. Sube el repo a GitHub
 # 3. Render → New → Blueprint → conecta el repo
 # 4. Pega DATABASE_URL, DIRECT_URL, GEMINI_API_KEY, GEMINI_SCAN_API_KEY y ADMIN_PASSWORD
-# 5. Tras el primer deploy del API, redeploy "farmaexpress-web" si hace falta
+# 5. Tras el primer deploy del API, redeploy "farmaexpress" si hace falta
 
 services:
   # ─── API NestJS ───
@@ -48,7 +48,7 @@ services:
 
   # ─── Flutter Web (nginx) ───
   - type: web
-    name: farmaexpress-web
+    name: farmaexpress
     runtime: docker
     dockerfilePath: deploy/Dockerfile.render-web
     dockerContext: .
