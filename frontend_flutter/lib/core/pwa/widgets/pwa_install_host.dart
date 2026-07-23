@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../config/brand_config.dart';
 import '../../theme/mara_theme.dart';
 import '../pwa_install_bridge.dart';
 import '../pwa_install_controller.dart';
 
-/// Host de instalación PWA: banner contextual + hoja de guía iOS.
+/// Host de instalación PWA: aviso discreto + guía iOS.
 class PwaInstallHost extends ConsumerStatefulWidget {
   const PwaInstallHost({super.key, required this.child});
 
@@ -29,14 +28,13 @@ class _PwaInstallHostState extends ConsumerState<PwaInstallHost> {
         widget.child,
         if (state.shouldShowBanner)
           Positioned(
-            left: 14,
-            right: 14,
-            // Por encima del NavigationBar (~68) + SafeArea
+            left: 16,
+            right: 16,
             bottom: 78,
             child: SafeArea(
               top: false,
               bottom: false,
-              child: _PwaInstallCard(
+              child: _PwaInstallBar(
                 isIos: state.shouldShowIosGuide,
                 onInstall: () => _onInstall(state),
                 onLater: () =>
@@ -57,7 +55,7 @@ class _PwaInstallHostState extends ConsumerState<PwaInstallHost> {
         backgroundColor: Colors.white,
         isScrollControlled: true,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         builder: (_) => const _IosInstallSheet(),
       );
@@ -76,8 +74,7 @@ class _PwaInstallHostState extends ConsumerState<PwaInstallHost> {
       case PwaInstallOutcome.accepted:
         messenger.showSnackBar(
           const SnackBar(
-            content: Text('Farma Express quedó en tu pantalla de inicio'),
-            backgroundColor: MaraColors.green,
+            content: Text('Listo — ya está en tu inicio'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -86,9 +83,7 @@ class _PwaInstallHostState extends ConsumerState<PwaInstallHost> {
       case PwaInstallOutcome.unavailable:
         messenger.showSnackBar(
           const SnackBar(
-            content: Text(
-              'Abre el menú del navegador y elige “Instalar app”',
-            ),
+            content: Text('Usa el menú del navegador → Instalar app'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -96,8 +91,8 @@ class _PwaInstallHostState extends ConsumerState<PwaInstallHost> {
   }
 }
 
-class _PwaInstallCard extends StatefulWidget {
-  const _PwaInstallCard({
+class _PwaInstallBar extends StatefulWidget {
+  const _PwaInstallBar({
     required this.isIos,
     required this.onInstall,
     required this.onLater,
@@ -108,25 +103,25 @@ class _PwaInstallCard extends StatefulWidget {
   final VoidCallback onLater;
 
   @override
-  State<_PwaInstallCard> createState() => _PwaInstallCardState();
+  State<_PwaInstallBar> createState() => _PwaInstallBarState();
 }
 
-class _PwaInstallCardState extends State<_PwaInstallCard>
+class _PwaInstallBarState extends State<_PwaInstallBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 420),
+    duration: const Duration(milliseconds: 280),
   )..forward();
-
-  late final Animation<Offset> _slide = Tween<Offset>(
-    begin: const Offset(0, 0.35),
-    end: Offset.zero,
-  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
   late final Animation<double> _fade = CurvedAnimation(
     parent: _controller,
     curve: Curves.easeOut,
   );
+
+  late final Animation<Offset> _slide = Tween<Offset>(
+    begin: const Offset(0, 0.12),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
   @override
   void dispose() {
@@ -141,96 +136,71 @@ class _PwaInstallCardState extends State<_PwaInstallCard>
       child: SlideTransition(
         position: _slide,
         child: Material(
-          color: Colors.transparent,
+          color: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: MaraColors.textPrimary.withValues(alpha: 0.08),
+            ),
+          ),
+          shadowColor: MaraColors.textPrimary.withValues(alpha: 0.08),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
             decoration: BoxDecoration(
-              color: MaraColors.navy,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.22),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
+                  color: MaraColors.textPrimary.withValues(alpha: 0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
+            padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
             child: Row(
               children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: MaraColors.green,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.storefront_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        BrandConfig.appName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14.5,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.isIos
-                            ? 'Añádela a tu pantalla de inicio'
-                            : 'Instálala y ábrela como app',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.78),
-                          fontSize: 12,
-                          height: 1.25,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    widget.isIos
+                        ? 'Añadir a pantalla de inicio'
+                        : 'Instalar Farma Express',
+                    style: const TextStyle(
+                      color: MaraColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      letterSpacing: -0.15,
+                      height: 1.2,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 TextButton(
-                  onPressed: widget.onLater,
+                  onPressed: widget.onInstall,
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.white70,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    foregroundColor: MaraColors.green,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text('Luego', style: TextStyle(fontSize: 12.5)),
-                ),
-                const SizedBox(width: 4),
-                FilledButton(
-                  onPressed: widget.onInstall,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: MaraColors.green,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                     textStyle: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13.5,
                     ),
                   ),
-                  child: Text(widget.isIos ? 'Cómo' : 'Instalar'),
+                  child: Text(widget.isIos ? 'Ver cómo' : 'Instalar'),
+                ),
+                IconButton(
+                  onPressed: widget.onLater,
+                  tooltip: 'Ahora no',
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: MaraColors.textTertiary,
+                  ),
                 ),
               ],
             ),
@@ -246,78 +216,62 @@ class _IosInstallSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottom = MediaQuery.paddingOf(context).bottom;
+
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        22,
-        12,
-        22,
-        22 + MediaQuery.paddingOf(context).bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(24, 10, 24, 20 + bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: 32,
+              height: 3,
               decoration: BoxDecoration(
                 color: MaraColors.textTertiary.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(99),
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           const Text(
-            'Instalar Farma Express en iPhone',
+            'En Safari',
             style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
               letterSpacing: -0.3,
+              color: MaraColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Safari no permite un botón de instalación automática. Hazlo en 3 pasos:',
+          const SizedBox(height: 6),
+          const Text(
+            'Toca Compartir y luego “Añadir a pantalla de inicio”.',
             style: TextStyle(
-              color: MaraColors.textSecondary.withValues(alpha: 0.95),
-              height: 1.4,
-              fontSize: 13.5,
+              color: MaraColors.textSecondary,
+              fontSize: 14,
+              height: 1.45,
             ),
           ),
-          const SizedBox(height: 18),
-          const _IosStep(
-            number: '1',
-            title: 'Toca Compartir',
-            subtitle: 'El ícono □↑ en la barra de Safari',
+          const SizedBox(height: 22),
+          const _QuietStep(label: 'Compartir', detail: 'Ícono □↑ abajo'),
+          const SizedBox(height: 14),
+          const _QuietStep(
+            label: 'Añadir a pantalla de inicio',
+            detail: 'En el menú de Safari',
           ),
-          const _IosStep(
-            number: '2',
-            title: 'Añadir a pantalla de inicio',
-            subtitle: 'Desplázate en el menú hasta esa opción',
-          ),
-          const _IosStep(
-            number: '3',
-            title: 'Confirma “Añadir”',
-            subtitle: 'Farma Express quedará en tu inicio',
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
+          const _QuietStep(label: 'Añadir', detail: 'Confirma y listo'),
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: FilledButton(
+            child: TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              style: FilledButton.styleFrom(
-                backgroundColor: MaraColors.green,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+              style: TextButton.styleFrom(
+                foregroundColor: MaraColors.textSecondary,
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text(
-                'Entendido',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
+              child: const Text('Cerrar'),
             ),
           ),
         ],
@@ -326,67 +280,36 @@ class _IosInstallSheet extends StatelessWidget {
   }
 }
 
-class _IosStep extends StatelessWidget {
-  const _IosStep({
-    required this.number,
-    required this.title,
-    required this.subtitle,
-  });
+class _QuietStep extends StatelessWidget {
+  const _QuietStep({required this.label, required this.detail});
 
-  final String number;
-  final String title;
-  final String subtitle;
+  final String label;
+  final String detail;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 28,
-            height: 28,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: MaraColors.greenLight,
-              borderRadius: BorderRadius.circular(9),
-            ),
-            child: Text(
-              number,
-              style: const TextStyle(
-                color: MaraColors.greenDark,
-                fontWeight: FontWeight.w900,
-                fontSize: 13,
-              ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14.5,
+              color: MaraColors.textPrimary,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: MaraColors.textSecondary,
-                    fontSize: 12.5,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
+        ),
+        Text(
+          detail,
+          style: const TextStyle(
+            fontSize: 13,
+            color: MaraColors.textTertiary,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
