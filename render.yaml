@@ -17,9 +17,9 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_6otjSrwAy8hs@ep-small-fire-atder57k.c-9.us-east-1.aws.neon.tech/maraplus?sslmode=require
       - key: DIRECT_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_6otjSrwAy8hs@ep-small-fire-atder57k.c-9.us-east-1.aws.neon.tech/maraplus?sslmode=require
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
@@ -29,7 +29,7 @@ services:
       - key: ADMIN_EMAIL
         value: admin@maraplus.com
       - key: ADMIN_PASSWORD
-        sync: false
+        value: Admin123!
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_SCAN_API_KEY
