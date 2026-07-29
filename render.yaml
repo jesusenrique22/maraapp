@@ -4,12 +4,12 @@
 # 2. Sube el repo a GitHub
 # 3. Render → New → Blueprint → conecta el repo
 # 4. Pega DATABASE_URL, DIRECT_URL, GEMINI_API_KEY, GEMINI_SCAN_API_KEY y ADMIN_PASSWORD
-# 5. Tras el primer deploy del API, redeploy "maraplus-web" si hace falta
+# 5. Tras el primer deploy del API, redeploy "maraplusapp" si hace falta
 
 services:
   # ─── API NestJS ───
   - type: web
-    name: maraplus-api
+    name: maraplusapp-api
     runtime: docker
     dockerfilePath: backend-nestjs/Dockerfile
     dockerContext: backend-nestjs
@@ -41,14 +41,14 @@ services:
       - key: PUBLIC_API_URL
         fromService:
           type: web
-          name: maraplus-api
+          name: maraplusapp-api
           envVarKey: RENDER_EXTERNAL_URL
       - key: RAPIDAPI_KEY
         sync: false
 
   # ─── Flutter Web (nginx) ───
   - type: web
-    name: maraplus-web
+    name: maraplusapp
     runtime: docker
     dockerfilePath: deploy/Dockerfile.render-web
     dockerContext: .
@@ -57,5 +57,6 @@ services:
       - key: API_BASE_URL
         fromService:
           type: web
-          name: maraplus-api
+          name: maraplusapp-api
           envVarKey: RENDER_EXTERNAL_URL
+
