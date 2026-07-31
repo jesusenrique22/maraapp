@@ -793,16 +793,15 @@ async function main() {
     },
   };
 
-  // Generar matriz de stock para medicamentos cargados de CIMA si no están en la matriz
+  // Generar matriz de stock para todos los productos en todas las sucursales
+  const activeBranchSlugs = branches.map((b) => b.slug);
   for (const item of allProducts) {
     if (!branchStockMatrix[item.sku]) {
-      branchStockMatrix[item.sku] = {
-        'las-mercedes': Math.floor(Math.random() * 40) + 15,
-        'fuerzas-armadas': Math.floor(Math.random() * 35) + 15,
-        'delicias': Math.floor(Math.random() * 30) + 10,
-        'catia': Math.floor(Math.random() * 25) + 10,
-        'valencia-norte': Math.floor(Math.random() * 20) + 5,
-      };
+      const stockObj: Record<string, number> = {};
+      for (const slug of activeBranchSlugs) {
+        stockObj[slug] = Math.floor(Math.random() * 40) + 15;
+      }
+      branchStockMatrix[item.sku] = stockObj;
     }
   }
 
